@@ -1,0 +1,27 @@
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary Files
+*.log
+*.tmp
+.cache/
+
+# Personal notes (if you want to keep local notes private)
+notes.md
+TODO.md
+
+# Project instructions (keep local only)
+CLAUDE.md
+.claude/
+
+# System files
+nul
