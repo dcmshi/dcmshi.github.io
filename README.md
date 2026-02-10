@@ -2,6 +2,8 @@
 
 A retro pixel-art inspired personal portfolio website with an Undertale/Deltarune aesthetic.
 
+**Live site:** https://dcmshi.github.io/
+
 ## Features
 
 - **Pure HTML/CSS/JavaScript** - No frameworks, no build step
