@@ -134,6 +134,16 @@ body {
     font-size: 16px;
     color: #888888;
     margin-top: 40px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.press-start:hover {
+    color: #cccccc;
+}
+
+.press-start:active {
+    color: #ff0000;
 }
 
 .cursor {

@@ -76,12 +76,29 @@ document.addEventListener('DOMContentLoaded', function() {
             {x:2,  w:10}, {x:13, w:12}, {x:26, w:12},
             {x:39, w:13}, {x:53, w:16}, {x:70, w:16}, {x:87, w:16}
         ]},
+        // 10-frame hanging cycle used for the Gauntlet of Deadly Terror easter egg
+        gauntlet: { y: 531, h: 19, frames: [
+            {x:2,   w:20}, {x:23,  w:20}, {x:44,  w:21}, {x:66,  w:21}, {x:88,  w:21},
+            {x:110, w:21}, {x:132, w:21}, {x:154, w:21}, {x:176, w:21}, {x:198, w:20}
+        ]},
     };
 
     let sprite = null;
     let ready = false;
     // Pre-rendered source canvases: prerendered[animName][dir][frameIdx]
     const prerendered = {};
+
+    // Gauntlet obstacle sprite sheet
+    const GAUNTLET_SPRITE_SRC = 'images/gauntlet-of-deadly-terror.png';
+    const OBSTACLE_SCALE = 3;
+    const GAUNTLET_ANIMS = {
+        cannon: { y: 1,   h: 53, frames: [{x: 1,  w: 50}] },
+        fire:   { y: 55,  h: 93, frames: [{x: 1,  w: 30}, {x: 32, w: 29}, {x: 62, w: 30}, {x: 93, w: 29}] },
+        spike:  { y: 149, h: 98, frames: [{x: 1,  w: 27}] },
+        lance:  { y: 248, h: 57, frames: [{x: 1,  w: 34}] },
+    };
+    let gauntletSprite = null;
+    let gauntletReady  = false;
 
     function prerender() {
         for (const [name, anim] of Object.entries(ANIMS)) {
@@ -310,6 +327,264 @@ document.addEventListener('DOMContentLoaded', function() {
         }, FRAME_MS);
     }
 
+    // ---- Easter egg: Gauntlet of Deadly Terror ----
+    // Triggered by clicking "Press Start". A rope descends from the top of the screen
+    // with the dog hanging from it, cycling through the gauntlet animation frames.
+
+    function spawnGauntlet() {
+        if (!ready) return;
+        if (document.getElementById('gauntlet-overlay')) return;
+
+        const G_SCALE   = SCALE * 2; // 6x — bigger for drama
+        const anim      = ANIMS.gauntlet;
+        const maxFrameW = Math.max(...anim.frames.map(f => f.w));
+        const dogW      = maxFrameW * G_SCALE;
+        const dogH      = anim.h * G_SCALE;
+        const viewW     = window.innerWidth;
+        const viewH     = window.innerHeight;
+
+        // Overlay
+        const overlay = document.createElement('div');
+        overlay.id = 'gauntlet-overlay';
+        Object.assign(overlay.style, {
+            position: 'fixed',
+            top: '0', left: '0', right: '0', bottom: '0',
+            background: 'rgba(0,0,0,0.88)',
+            zIndex: '10000',
+            cursor: 'pointer',
+            opacity: '0',
+            transition: 'opacity 0.4s ease',
+        });
+
+        // Title
+        const titleEl = document.createElement('div');
+        titleEl.textContent = '* GAUNTLET OF DEADLY TERROR';
+        Object.assign(titleEl.style, {
+            position: 'absolute',
+            top: '40px',
+            left: '0', right: '0',
+            fontFamily: "'Press Start 2P', monospace",
+            color: '#ff0000',
+            fontSize: '12px',
+            textAlign: 'center',
+            padding: '0 24px',
+            letterSpacing: '1px',
+            lineHeight: '2',
+        });
+
+        // Dismiss hint
+        const hintEl = document.createElement('div');
+        hintEl.textContent = '[ click or esc to dismiss ]';
+        Object.assign(hintEl.style, {
+            position: 'absolute',
+            bottom: '24px',
+            left: '0', right: '0',
+            fontFamily: "'Press Start 2P', monospace",
+            color: '#333333',
+            fontSize: '8px',
+            textAlign: 'center',
+        });
+
+        // Rope
+        const ropeEl = document.createElement('div');
+        Object.assign(ropeEl.style, {
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '3px',
+            background: '#ffd700',
+            height: '0',
+        });
+
+        // Dog canvas
+        const dogCanvas = document.createElement('canvas');
+        dogCanvas.width  = dogW;
+        dogCanvas.height = dogH;
+        Object.assign(dogCanvas.style, {
+            position: 'absolute',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            imageRendering: 'pixelated',
+        });
+
+        overlay.appendChild(titleEl);
+        overlay.appendChild(hintEl);
+        overlay.appendChild(ropeEl);
+        overlay.appendChild(dogCanvas);
+        document.body.appendChild(overlay);
+
+        // ---- Obstacle helpers ----
+        const obstacleDisposeFns = [];
+        const retreatFns         = [];
+
+        // animName: key in GAUNTLET_ANIMS
+        // fromTop=true → slides in from top, fromTop=false → slides up from bottom
+        // restTop: final top px (null = viewH - spriteH for bottom-entry sprites)
+        function spawnObstacle(animName, dir, cycleMs, centerX, fromTop, speed, restTop, delay, flipV = false) {
+            if (!gauntletReady) return;
+            const oAnim = GAUNTLET_ANIMS[animName];
+            const W     = Math.max(...oAnim.frames.map(f => f.w)) * OBSTACLE_SCALE;
+            const H     = oAnim.h * OBSTACLE_SCALE;
+            const rest  = (restTop !== null) ? restTop : viewH - H;
+
+            const c = document.createElement('canvas');
+            c.width  = W;
+            c.height = H;
+            Object.assign(c.style, {
+                position: 'absolute',
+                imageRendering: 'pixelated',
+                left: Math.round(centerX - W / 2) + 'px',
+                top:  (fromTop ? -H : viewH) + 'px',
+            });
+            overlay.appendChild(c);
+
+            let fi = 0;
+            function draw() {
+                const fr  = oAnim.frames[fi];
+                const dw  = fr.w * OBSTACLE_SCALE;
+                const dh  = oAnim.h * OBSTACLE_SCALE;
+                const ctx = c.getContext('2d');
+                ctx.clearRect(0, 0, W, H);
+                ctx.imageSmoothingEnabled = false;
+                if (dir === 'left' || flipV) {
+                    ctx.save();
+                    ctx.translate(dir === 'left' ? dw : 0, flipV ? dh : 0);
+                    ctx.scale(dir === 'left' ? -1 : 1, flipV ? -1 : 1);
+                    ctx.drawImage(gauntletSprite, fr.x, oAnim.y, fr.w, oAnim.h, 0, 0, dw, dh);
+                    ctx.restore();
+                } else {
+                    ctx.drawImage(gauntletSprite, fr.x, oAnim.y, fr.w, oAnim.h, 0, 0, dw, dh);
+                }
+            }
+            draw();
+
+            let tick = null;
+            if (cycleMs > 0 && oAnim.frames.length > 1) {
+                tick = setInterval(() => { fi = (fi + 1) % oAnim.frames.length; draw(); }, cycleMs);
+                obstacleDisposeFns.push(() => clearInterval(tick));
+            }
+
+            let curTop    = fromTop ? -H : viewH;
+            let retreating = false;
+            let running    = true;
+
+            function step() {
+                if (!running) return;
+                if (!retreating) {
+                    curTop += fromTop ? speed : -speed;
+                    const reached = fromTop ? curTop >= rest : curTop <= rest;
+                    if (reached) curTop = rest;
+                    c.style.top = curTop + 'px';
+                    if (!reached) requestAnimationFrame(step);
+                    // else: at rest, waiting for retreat signal
+                } else {
+                    curTop += fromTop ? -speed * 2 : speed * 2;
+                    c.style.top = curTop + 'px';
+                    const gone = fromTop ? curTop <= -H : curTop >= viewH + H;
+                    if (gone) { running = false; return; }
+                    requestAnimationFrame(step);
+                }
+            }
+
+            setTimeout(() => requestAnimationFrame(step), delay);
+            retreatFns.push(() => { retreating = true; requestAnimationFrame(step); });
+            obstacleDisposeFns.push(() => { running = false; });
+        }
+
+        // Cannon — bottom-left, slides up, facing inward
+        spawnObstacle('cannon', 'left',  0,       Math.round(viewW * 0.10), false, 3.0, null,                        300);
+        // Fire — bottom-right, slides up, animated
+        spawnObstacle('fire',   'right', FRAME_MS, Math.round(viewW * 0.82), false, 2.5, null,                        700);
+        // Spikeball — top-left area, descends until fully in frame
+        spawnObstacle('spike',  'right', 0,        Math.round(viewW * 0.22), true,  2.0, 0,   1400);
+        // Lance — top-right area, descends until fully in frame
+        spawnObstacle('lance',  'right', 0,        Math.round(viewW * 0.72), true,  3.5, 0,    2000);
+        // Lance (vertically + horizontally flipped) — bottom-left area, rises from below
+        spawnObstacle('lance',  'left',  0,        Math.round(viewW * 0.35), false, 3.5, null, 2000, true);
+
+        // ---- Dog animation ----
+        let fi = 0;
+        function drawDog() {
+            const src   = prerendered.gauntlet.right[fi];
+            const frame = anim.frames[fi];
+            const ctx   = dogCanvas.getContext('2d');
+            ctx.clearRect(0, 0, dogW, dogH);
+            ctx.imageSmoothingEnabled = false;
+            ctx.drawImage(src, 0, 0, frame.w * G_SCALE, anim.h * G_SCALE);
+        }
+
+        // Fade in → measure title → start all animations
+        requestAnimationFrame(() => {
+            overlay.style.opacity = '1';
+            requestAnimationFrame(() => {
+                const titleBottom = titleEl.getBoundingClientRect().bottom;
+                const ropeTopY    = Math.round(titleBottom + 20);
+                const targetY     = viewH * 0.72;
+                const maxRope     = Math.max(30, targetY - ropeTopY - dogH);
+
+                ropeEl.style.top    = ropeTopY + 'px';
+                dogCanvas.style.top = ropeTopY + 'px';
+
+                drawDog();
+
+                const frameTick = setInterval(() => {
+                    fi = (fi + 1) % anim.frames.length;
+                    drawDog();
+                }, FRAME_MS);
+
+                let ropeLen   = 0;
+                let ascending = false;
+                let idleTimer = null;
+                let running   = true;
+
+                function updatePositions() {
+                    ropeEl.style.height = ropeLen + 'px';
+                    dogCanvas.style.top = (ropeTopY + ropeLen) + 'px';
+                }
+
+                function animStep() {
+                    if (!running) return;
+                    if (!ascending) {
+                        ropeLen = Math.min(ropeLen + 1.5, maxRope);
+                        updatePositions();
+                        if (ropeLen >= maxRope) {
+                            idleTimer = setTimeout(() => {
+                                ascending = true;
+                                retreatFns.forEach(fn => fn());
+                                requestAnimationFrame(animStep);
+                            }, 2800);
+                            return;
+                        }
+                    } else {
+                        ropeLen = Math.max(ropeLen - 3.0, 0);
+                        updatePositions();
+                        if (ropeLen <= 0) { dismiss(); return; }
+                    }
+                    requestAnimationFrame(animStep);
+                }
+
+                requestAnimationFrame(animStep);
+
+                let dismissed = false;
+                function dismiss() {
+                    if (dismissed) return;
+                    dismissed = true;
+                    running = false;
+                    if (idleTimer) clearTimeout(idleTimer);
+                    clearInterval(frameTick);
+                    obstacleDisposeFns.forEach(fn => fn());
+                    document.removeEventListener('keydown', onKey);
+                    overlay.style.opacity = '0';
+                    setTimeout(() => { overlay.remove(); }, 400);
+                }
+
+                overlay.addEventListener('click', dismiss);
+                function onKey(e) { if (e.key === 'Escape') dismiss(); }
+                document.addEventListener('keydown', onKey);
+            });
+        });
+    }
+
     // walk is weighted higher so it's the most common behaviour
     const BEHAVIOURS = [spawnWalk, spawnWalk, spawnWalkAndTalk, spawnWalkAndSleep, spawnHolePeek];
 
@@ -328,8 +603,17 @@ document.addEventListener('DOMContentLoaded', function() {
         ready = true;
         setTimeout(pick, 4000 + Math.random() * 4000);
         schedule();
+
+        const pressStartEl = document.querySelector('.press-start');
+        if (pressStartEl) {
+            pressStartEl.addEventListener('click', spawnGauntlet);
+        }
     };
     sprite.src = SPRITE_SRC;
+
+    gauntletSprite = new Image();
+    gauntletSprite.onload = function() { gauntletReady = true; };
+    gauntletSprite.src = GAUNTLET_SPRITE_SRC + '?v=' + Date.now();
 })();
 
 // ========================================
