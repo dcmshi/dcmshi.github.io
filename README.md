@@ -10,7 +10,10 @@ A retro pixel-art inspired personal portfolio website with an Undertale/Deltarun
 - **Pixel-perfect design** - Press Start 2P font, retro game menu vibes
 - **Static hosting** - Ready for GitHub Pages deployment
 - **Responsive** - Works on desktop, tablet, and mobile
-- **Accessible** - Keyboard navigation, sufficient contrast, semantic HTML
+- **Accessible** - WCAG AA contrast, keyboard navigation, skip-link, semantic landmarks, aria attributes, reduced-motion support
+- **Collapsible project cards** - Each project expands/collapses on click
+- **Annoying dog animations** - Sprite-based cameos across the page
+- **Easter egg** - Gauntlet of Deadly Terror (click "Press Start" to find out)
 
 ## Local Development
 
@@ -72,11 +75,15 @@ git push -u origin main
 
 ```
 personal_website/
-├── index.html       # Main HTML structure
-├── styles.css       # All styling
-├── script.js        # Minimal interactivity
-├── README.md        # This file
-└── CLAUDE.md        # Project brief and guidelines
+├── index.html           # Main HTML structure
+├── styles.css           # All styling
+├── script.js            # Navigation, project accordion, annoying dog, easter egg
+├── fonts/               # Determination Mono font files
+│   └── README.md        # Font setup instructions
+├── images/              # Sprite sheets (transparent PNG)
+│   ├── annoying-dog.png
+│   └── gauntlet-of-deadly-terror.png
+└── README.md            # This file
 ```
 
 ## Design Philosophy
@@ -88,6 +95,17 @@ This site prioritizes:
 - **Craft** over corporate
 
 Inspired by Undertale/Deltarune's UI design - nostalgic, minimal, and full of character.
+
+## Browser Compatibility
+
+Tested on modern browsers. IE11 is not supported.
+
+| Browser | Minimum Version |
+|---------|----------------|
+| Chrome  | 90+            |
+| Firefox | 88+            |
+| Safari  | 14+            |
+| Edge    | 90+            |
 
 ## License
 
