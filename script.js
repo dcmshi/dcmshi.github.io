@@ -36,6 +36,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     */
 
+    // Project accordion — click to expand/collapse each project card
+    document.querySelectorAll('.project-name').forEach(function(nameEl) {
+        function toggle() {
+            var item = nameEl.closest('.project-item');
+            var indicator = nameEl.querySelector('.expand-indicator');
+            item.classList.toggle('expanded');
+            indicator.textContent = item.classList.contains('expanded') ? '[-]' : '[+]';
+        }
+        nameEl.addEventListener('click', toggle);
+        nameEl.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+        });
+    });
+
     // Keyboard navigation support
     document.addEventListener('keydown', function(e) {
         // Press 'S' or Enter on title screen to scroll to About

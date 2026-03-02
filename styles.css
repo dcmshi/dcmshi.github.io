@@ -285,7 +285,42 @@ body {
     font-family: 'Press Start 2P', monospace;
     font-size: 14px;
     color: #ff0000;
+    margin-bottom: 0;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+
+.project-name:focus {
+    outline: 2px solid #ffff00;
+    outline-offset: 4px;
+}
+
+.project-item.expanded .project-name {
     margin-bottom: 15px;
+}
+
+.expand-indicator {
+    font-size: 11px;
+    color: #555555;
+    flex-shrink: 0;
+    margin-left: 12px;
+}
+
+.project-item.expanded .expand-indicator {
+    color: #ff0000;
+}
+
+.project-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease;
+}
+
+.project-item.expanded .project-body {
+    max-height: 600px;
 }
 
 .project-desc {
