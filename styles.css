@@ -8,11 +8,7 @@
 
 @font-face {
     font-family: 'Determination Mono';
-    src: url('fonts/DeterminationMonoWebRegular.woff2') format('woff2'),
-         url('fonts/DeterminationMonoWebRegular.woff') format('woff'),
-         url('fonts/DTM-Mono.otf') format('opentype'),
-         url('fonts/DTM-Mono.ttf') format('truetype'),
-         url('fonts/DeterminationMono.ttf') format('truetype');
+    src: url('fonts/DTM-Mono.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
@@ -144,6 +140,11 @@ body {
 
 .press-start:active {
     color: #ff0000;
+}
+
+.press-start:focus {
+    outline: 2px solid #ffff00;
+    outline-offset: 4px;
 }
 
 .cursor {
@@ -350,7 +351,7 @@ body {
 
 .project-link-placeholder {
     font-size: 16px;
-    color: #666666;
+    color: #777777;
     font-style: italic;
 }
 
@@ -391,13 +392,13 @@ body {
 
 .footer p {
     font-size: 14px;
-    color: #666666;
+    color: #777777;
     margin-bottom: 10px;
     line-height: 1.8;
 }
 
 .footer-credit {
-    color: #444444;
+    color: #666666;
 }
 
 /* ========================================
@@ -493,4 +494,16 @@ button:focus {
 ::selection {
     background: #ff0000;
     color: #ffffff;
+}
+
+/* Respect OS-level reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto;
+    }
+    .cursor,
+    .menu-item:hover .selector,
+    .back-link:hover .back-arrow {
+        animation: none;
+    }
 }

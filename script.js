@@ -38,11 +38,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Project accordion — click to expand/collapse each project card
     document.querySelectorAll('.project-name').forEach(function(nameEl) {
+        nameEl.setAttribute('aria-expanded', 'false');
         function toggle() {
             var item = nameEl.closest('.project-item');
             var indicator = nameEl.querySelector('.expand-indicator');
             item.classList.toggle('expanded');
-            indicator.textContent = item.classList.contains('expanded') ? '[-]' : '[+]';
+            var expanded = item.classList.contains('expanded');
+            indicator.textContent = expanded ? '[-]' : '[+]';
+            nameEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
         }
         nameEl.addEventListener('click', toggle);
         nameEl.addEventListener('keydown', function(e) {
@@ -111,8 +114,18 @@ document.addEventListener('DOMContentLoaded', function() {
         spike:  { y: 149, h: 98, frames: [{x: 1,  w: 27}] },
         lance:  { y: 248, h: 57, frames: [{x: 1,  w: 34}] },
     };
+
+    // Obstacle layout config: positions (viewport fractions), speeds, and entry delays
+    const GAUNTLET_OBSTACLES = [
+        { anim: 'cannon', dir: 'left',  cycleMs: 0,        xFrac: 0.10, fromTop: false, speed: 3.0, restTop: null, delay:  300 },
+        { anim: 'fire',   dir: 'right', cycleMs: FRAME_MS, xFrac: 0.82, fromTop: false, speed: 2.5, restTop: null, delay:  700 },
+        { anim: 'spike',  dir: 'right', cycleMs: 0,        xFrac: 0.22, fromTop: true,  speed: 2.0, restTop: 0,    delay: 1400 },
+        { anim: 'lance',  dir: 'right', cycleMs: 0,        xFrac: 0.72, fromTop: true,  speed: 3.5, restTop: 0,    delay: 2000 },
+        { anim: 'lance',  dir: 'left',  cycleMs: 0,        xFrac: 0.35, fromTop: false, speed: 3.5, restTop: null, delay: 2000, flipV: true },
+    ];
     let gauntletSprite = null;
     let gauntletReady  = false;
+    let pendingGauntlet = false;
 
     function prerender() {
         for (const [name, anim] of Object.entries(ANIMS)) {
@@ -346,7 +359,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // with the dog hanging from it, cycling through the gauntlet animation frames.
 
     function spawnGauntlet() {
-        if (!ready) return;
+        if (!ready || !gauntletReady) { pendingGauntlet = true; return; }
+        pendingGauntlet = false;
         if (document.getElementById('gauntlet-overlay')) return;
 
         const G_SCALE   = SCALE * 2; // 6x — bigger for drama
@@ -360,6 +374,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // Overlay
         const overlay = document.createElement('div');
         overlay.id = 'gauntlet-overlay';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-label', 'Gauntlet of Deadly Terror easter egg');
         Object.assign(overlay.style, {
             position: 'fixed',
             top: '0', left: '0', right: '0', bottom: '0',
@@ -505,16 +522,10 @@ document.addEventListener('DOMContentLoaded', function() {
             obstacleDisposeFns.push(() => { running = false; });
         }
 
-        // Cannon — bottom-left, slides up, facing inward
-        spawnObstacle('cannon', 'left',  0,       Math.round(viewW * 0.10), false, 3.0, null,                        300);
-        // Fire — bottom-right, slides up, animated
-        spawnObstacle('fire',   'right', FRAME_MS, Math.round(viewW * 0.82), false, 2.5, null,                        700);
-        // Spikeball — top-left area, descends until fully in frame
-        spawnObstacle('spike',  'right', 0,        Math.round(viewW * 0.22), true,  2.0, 0,   1400);
-        // Lance — top-right area, descends until fully in frame
-        spawnObstacle('lance',  'right', 0,        Math.round(viewW * 0.72), true,  3.5, 0,    2000);
-        // Lance (vertically + horizontally flipped) — bottom-left area, rises from below
-        spawnObstacle('lance',  'left',  0,        Math.round(viewW * 0.35), false, 3.5, null, 2000, true);
+        GAUNTLET_OBSTACLES.forEach(o => {
+            spawnObstacle(o.anim, o.dir, o.cycleMs, Math.round(viewW * o.xFrac),
+                          o.fromTop, o.speed, o.restTop, o.delay, o.flipV || false);
+        });
 
         // ---- Dog animation ----
         let fi = 0;
@@ -622,11 +633,22 @@ document.addEventListener('DOMContentLoaded', function() {
         if (pressStartEl) {
             pressStartEl.addEventListener('click', spawnGauntlet);
         }
+
+        if (pendingGauntlet && gauntletReady) spawnGauntlet();
+    };
+    sprite.onerror = function() {
+        console.warn('annoying-dog.png failed to load — dog animations disabled.');
     };
     sprite.src = SPRITE_SRC;
 
     gauntletSprite = new Image();
-    gauntletSprite.onload = function() { gauntletReady = true; };
+    gauntletSprite.onload = function() {
+        gauntletReady = true;
+        if (pendingGauntlet && ready) spawnGauntlet();
+    };
+    gauntletSprite.onerror = function() {
+        console.warn('gauntlet-of-deadly-terror.png failed to load — easter egg disabled.');
+    };
     gauntletSprite.src = GAUNTLET_SPRITE_SRC + '?v=' + Date.now();
 })();
 
