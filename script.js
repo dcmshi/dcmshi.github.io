@@ -41,9 +41,11 @@ document.addEventListener('DOMContentLoaded', function() {
         nameEl.setAttribute('aria-expanded', 'false');
         function toggle() {
             var item = nameEl.closest('.project-item');
+            var body = item.querySelector('.project-body');
             var indicator = nameEl.querySelector('.expand-indicator');
             item.classList.toggle('expanded');
             var expanded = item.classList.contains('expanded');
+            body.style.maxHeight = expanded ? body.scrollHeight + 'px' : '0';
             indicator.textContent = expanded ? '[-]' : '[+]';
             nameEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
         }

@@ -321,7 +321,7 @@ body {
 }
 
 .project-item.expanded .project-body {
-    max-height: 600px;
+    max-height: none;
 }
 
 .project-desc {
