@@ -11,7 +11,7 @@ A retro pixel-art inspired personal portfolio website with an Undertale/Deltarun
 - **Static hosting** - Ready for GitHub Pages deployment
 - **Responsive** - Works on desktop, tablet, and mobile
 - **Accessible** - WCAG AA contrast, keyboard navigation, skip-link, semantic landmarks, aria attributes, reduced-motion support
-- **Collapsible project cards** - Each project expands/collapses on click
+- **Collapsible project cards** - Each project expands/collapses on click with smooth, lag-free animation
 - **Annoying dog animations** - Sprite-based cameos across the page
 - **Easter egg** - Gauntlet of Deadly Terror (click "Press Start" to find out)
 
