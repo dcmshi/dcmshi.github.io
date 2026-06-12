@@ -12,77 +12,40 @@ A retro pixel-art inspired personal portfolio website with an Undertale/Deltarun
 - **Responsive** - Works on desktop, tablet, and mobile
 - **Accessible** - WCAG AA contrast, keyboard navigation, skip-link, semantic landmarks, aria attributes, reduced-motion support
 - **Collapsible project cards** - Each project expands/collapses on click with smooth, lag-free animation
-- **Annoying dog animations** - Sprite-based cameos across the page
+- **Annoying dog animations** - Sprite-based cameos across the page (respects `prefers-reduced-motion`)
 - **Easter egg** - Gauntlet of Deadly Terror (click "Press Start" to find out)
+- **Custom 404 page** - But nobody came.
+- **Link previews** - Open Graph tags and a pixel-art banner for social shares
 
 ## Local Development
 
 Simply open `index.html` in your browser. No build process required.
 
-## Customization
+## Making Changes
 
-### Update Your Information
+- **Projects** live in the projects section of `index.html` — each is a self-contained `.project-item` block; copy one to add a new project.
+- **Colors** are plain hex values in `styles.css`: black `#000000` background, white text, red `#ff0000` / yellow `#ffff00` / cyan `#00ffff` accents.
+- **Sprite behaviour** (dog animations, gauntlet obstacles) is configured in the constant tables at the top of the IIFE in `script.js`.
 
-1. Open `index.html`
-2. Replace the following placeholders:
-   - `[Your Name]` - Your full name or display name
-   - `@[your-handle]` - Your username/handle
-   - `[your-username]` - Your GitHub username
-   - `[repo-name]` - Your repository names
-   - `[your-linkedin]` - Your LinkedIn profile ID
-   - `[your-email]@example.com` - Your email address
+## Deployment
 
-### Add Your Projects
-
-Edit the projects section in `index.html`:
-- Update project names, descriptions, and tech stacks
-- Replace GitHub links with your actual repositories
-- Add or remove projects as needed
-
-### Customize Colors
-
-Edit `styles.css` to change the color scheme:
-- Background: `#000000` (black)
-- Text: `#ffffff` (white)
-- Accent Red: `#ff0000`
-- Accent Yellow: `#ffff00`
-- Accent Cyan: `#00ffff`
-
-## Deployment to GitHub Pages
-
-1. Create a new repository on GitHub
-2. Initialize git and push your code:
-
-```bash
-git init
-git add .
-git commit -m "Initial commit: Undertale-inspired personal website"
-git branch -M main
-git remote add origin https://github.com/[your-username]/[repo-name].git
-git push -u origin main
-```
-
-3. Enable GitHub Pages:
-   - Go to repository Settings
-   - Navigate to Pages section
-   - Set Source to "Deploy from a branch"
-   - Select `main` branch and `/ (root)` folder
-   - Click Save
-
-4. Your site will be live at: `https://[your-username].github.io/[repo-name]/`
+Hosted on GitHub Pages. Pushing to `main` deploys automatically to https://dcmshi.github.io/.
 
 ## File Structure
 
 ```
 personal_website/
 ├── index.html           # Main HTML structure
+├── 404.html             # Custom GitHub Pages 404
 ├── styles.css           # All styling
-├── script.js            # Navigation, project accordion, annoying dog, easter egg
+├── script.js            # Project accordion, annoying dog, easter egg
 ├── fonts/               # Determination Mono font files
 │   └── README.md        # Font setup instructions
-├── images/              # Sprite sheets (transparent PNG)
-│   ├── annoying-dog.png
-│   └── gauntlet-of-deadly-terror.png
+├── images/
+│   ├── annoying-dog.png              # Dog sprite sheet (transparent PNG)
+│   ├── gauntlet-of-deadly-terror.png # Obstacle sprite sheet
+│   ├── favicon.png                   # Pixel heart favicon
+│   └── og-banner.png                 # Link-preview banner
 └── README.md            # This file
 ```
 

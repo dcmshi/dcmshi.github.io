@@ -349,12 +349,6 @@ body {
     color: #ffff00;
 }
 
-.project-link-placeholder {
-    font-size: 16px;
-    color: #777777;
-    font-style: italic;
-}
-
 /* ========================================
    CONTACT SECTION
    ======================================== */
@@ -415,7 +409,7 @@ body {
     }
 
     .tagline {
-        font-size: 11px;
+        font-size: 14px;
     }
 
     .menu-item {
@@ -430,12 +424,13 @@ body {
         font-size: 18px;
     }
 
+    /* Pixel fonts need size to stay legible — don't shrink body copy below 16px */
     .content {
-        font-size: 11px;
+        font-size: 16px;
     }
 
     body {
-        font-size: 12px;
+        font-size: 16px;
     }
 }
 
@@ -455,7 +450,7 @@ body {
     }
 
     .content {
-        font-size: 10px;
+        font-size: 15px;
     }
 
     .project-item {

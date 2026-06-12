@@ -2,53 +2,39 @@
 // UNDERTALE-INSPIRED PERSONAL WEBSITE - SCRIPT
 // ========================================
 
-// Smooth scroll navigation with offset for better positioning
+// Anchor navigation relies on CSS scroll-behavior: smooth (which the
+// prefers-reduced-motion media query downgrades to auto) — no JS needed.
 document.addEventListener('DOMContentLoaded', function() {
-
-    // Smooth scroll for all navigation links (menu items and back links)
-    const allNavLinks = document.querySelectorAll('.menu-item, .back-link');
-
-    allNavLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-
-            const targetId = this.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-
-            if (targetSection) {
-                targetSection.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
-    });
-
-    // Optional: Add sound effect on menu hover (disabled by default)
-    // Uncomment if you want to add audio feedback
-    /*
-    menuLinks.forEach(link => {
-        link.addEventListener('mouseenter', function() {
-            // You can add a click sound here if desired
-            // const audio = new Audio('path-to-sound.wav');
-            // audio.play();
-        });
-    });
-    */
 
     // Project accordion — click to expand/collapse each project card
     document.querySelectorAll('.project-name').forEach(function(nameEl) {
+        var item = nameEl.closest('.project-item');
+        var body = item.querySelector('.project-body');
         nameEl.setAttribute('aria-expanded', 'false');
         function toggle() {
-            var item = nameEl.closest('.project-item');
-            var body = item.querySelector('.project-body');
             var indicator = nameEl.querySelector('.expand-indicator');
-            item.classList.toggle('expanded');
-            var expanded = item.classList.contains('expanded');
-            body.style.maxHeight = expanded ? body.scrollHeight + 'px' : '0';
+            var expanded = !item.classList.contains('expanded');
+            if (expanded) {
+                item.classList.add('expanded');
+                body.style.maxHeight = body.scrollHeight + 'px';
+            } else {
+                // maxHeight may be 'none' (set after expand) — pin it to a pixel
+                // value and force a reflow so the collapse transition has a start point
+                body.style.maxHeight = body.scrollHeight + 'px';
+                void body.offsetHeight;
+                item.classList.remove('expanded');
+                body.style.maxHeight = '0';
+            }
             indicator.textContent = expanded ? '[-]' : '[+]';
             nameEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
         }
+        // Once fully expanded, release the fixed max-height so the card
+        // reflows naturally if the viewport resizes while open
+        body.addEventListener('transitionend', function(e) {
+            if (e.propertyName === 'max-height' && item.classList.contains('expanded')) {
+                body.style.maxHeight = 'none';
+            }
+        });
         nameEl.addEventListener('click', toggle);
         nameEl.addEventListener('keydown', function(e) {
             if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
@@ -57,14 +43,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Keyboard navigation support
     document.addEventListener('keydown', function(e) {
+        // Don't hijack keys aimed at a focused link or button
+        if (e.target.closest && e.target.closest('a, button, [role="button"]')) return;
         // Press 'S' or Enter on title screen to scroll to About
         if ((e.key === 's' || e.key === 'S' || e.key === 'Enter') && window.scrollY < 100) {
             const aboutSection = document.querySelector('#about');
             if (aboutSection) {
-                aboutSection.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+                aboutSection.scrollIntoView({ block: 'start' });
             }
         }
     });
@@ -628,12 +613,23 @@ document.addEventListener('DOMContentLoaded', function() {
     sprite.onload = function() {
         prerender();
         ready = true;
-        setTimeout(pick, 4000 + Math.random() * 4000);
-        schedule();
+
+        // Random dog cameos are unsolicited motion — skip them entirely for
+        // users who prefer reduced motion. The gauntlet stays available since
+        // it's explicitly user-triggered.
+        const reducedMotion = window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (!reducedMotion) {
+            setTimeout(pick, 4000 + Math.random() * 4000);
+            schedule();
+        }
 
         const pressStartEl = document.querySelector('.press-start');
         if (pressStartEl) {
             pressStartEl.addEventListener('click', spawnGauntlet);
+            pressStartEl.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); spawnGauntlet(); }
+            });
         }
 
         if (pendingGauntlet && gauntletReady) spawnGauntlet();
@@ -653,27 +649,3 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     gauntletSprite.src = GAUNTLET_SPRITE_SRC + '?v=' + Date.now();
 })();
-
-// ========================================
-// Optional: Add "typed text" effect for the title screen (currently disabled)
-// Uncomment if you want a typing animation effect
-/*
-function typeText(element, text, speed = 100) {
-    let i = 0;
-    element.textContent = '';
-
-    function type() {
-        if (i < text.length) {
-            element.textContent += text.charAt(i);
-            i++;
-            setTimeout(type, speed);
-        }
-    }
-
-    type();
-}
-
-// Usage example:
-// const titleElement = document.querySelector('.pixel-title');
-// typeText(titleElement, '[Your Name]', 100);
-*/
