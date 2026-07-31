@@ -32,7 +32,8 @@ so the project stays dependency-free. The tests read `index.html`, `styles.css`
 and `script.js` as text and assert on the things that are easy to break by
 accident: WCAG contrast ratios computed from the declared colours, touch-target
 sizes, ARIA wiring on the accordion, `og:image` dimensions checked against the
-real PNG header, and a lint for CSS rules that restate what they inherit.
+real PNG header, agreement between `sitemap.xml`, `robots.txt` and the canonical
+URL, and a lint for CSS rules that restate what they inherit.
 
 They do not cover animation timing or anything else that needs a live browser.
 
@@ -54,6 +55,8 @@ personal_website/
 ├── 404.html             # Custom GitHub Pages 404
 ├── styles.css           # All styling
 ├── script.js            # Project accordion, annoying dog, easter egg
+├── robots.txt           # Crawlable, and points at the sitemap
+├── sitemap.xml          # One entry: the canonical home page URL
 ├── fonts/
 │   ├── DTM-Mono.woff2   # Determination Mono (what the site loads)
 │   ├── DTM-Mono.ttf     # Fallback, and the source for the WOFF2

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  One page, one entry. The in-page sections (#about, #projects, #contact) are
+  fragments of this same document, not separate URLs, so they don't belong here.
+  404.html is noindex and is likewise omitted.
+
+  changefreq and priority are deliberately absent: Google ignores both, and
+  priority is meaningless in a single-URL sitemap.
+
+  lastmod is a hint to crawlers, so keep it honest — bump it when index.html
+  changes in a way a search engine should care about.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>https://dcmshi.github.io/</loc>
+        <lastmod>2026-07-31</lastmod>
+    </url>
+</urlset>

@@ -7,6 +7,8 @@ const { ROOT, read, declaration } = require('./helpers');
 const html = read('index.html');
 const notFound = read('404.html');
 const css = read('styles.css');
+const robots = read('robots.txt');
+const sitemap = read('sitemap.xml');
 
 const SITE_ORIGIN = 'https://dcmshi.github.io';
 
@@ -63,4 +65,55 @@ test('og:image declares the real dimensions of the banner', () => {
 test('og:image has alt text', () => {
     const alt = meta('property', 'og:image:alt');
     assert.ok(alt && alt.length > 10, 'og:image:alt should describe the banner');
+});
+
+test('robots.txt keeps the site crawlable', () => {
+    // Directives, minus comments and blank lines, as [field, value] pairs.
+    const directives = robots
+        .split('\n')
+        .map(line => line.replace(/#.*/, '').trim())
+        .filter(Boolean)
+        .map(line => {
+            const idx = line.indexOf(':');
+            return [line.slice(0, idx).trim().toLowerCase(), line.slice(idx + 1).trim()];
+        });
+
+    const groups = directives.filter(([field]) => field === 'user-agent');
+    assert.deepEqual(groups.map(([, value]) => value), ['*'], 'expected one wildcard group');
+
+    // A stray `Disallow: /` is the single easiest way to delist the whole site.
+    for (const [field, value] of directives) {
+        if (field === 'disallow') {
+            assert.notEqual(value, '/', 'Disallow: / would hide the entire site');
+        }
+    }
+});
+
+test('the sitemap robots.txt advertises is the one that exists', () => {
+    const advertised = robots.match(/^Sitemap:\s*(\S+)$/m);
+    assert.ok(advertised, 'robots.txt should advertise a sitemap');
+    // Per the sitemaps spec this must be a full URL, not a site-relative path.
+    const local = localFileFor(advertised[1]);
+    assert.equal(local, 'sitemap.xml');
+    assert.ok(fs.existsSync(path.join(ROOT, local)), local + ' does not exist');
+});
+
+test('the sitemap lists the canonical URL and nothing else', () => {
+    const locs = [...sitemap.matchAll(/<loc>([^<]*)<\/loc>/g)].map(m => m[1]);
+    const canonical = html.match(/<link rel="canonical" href="([^"]*)"/)[1];
+    // Disagreeing with the canonical tag sends crawlers two different answers
+    // about which URL is the real one. Exact equality also keeps noindex pages
+    // like 404.html out, since any extra <loc> fails here.
+    assert.deepEqual(locs, [canonical]);
+});
+
+test('the sitemap lastmod is a real, non-future date', () => {
+    const m = sitemap.match(/<lastmod>([^<]*)<\/lastmod>/);
+    assert.ok(m, 'expected a lastmod');
+    // W3C Datetime, which for a date-only value means exactly YYYY-MM-DD.
+    assert.match(m[1], /^\d{4}-\d{2}-\d{2}$/);
+    const lastmod = new Date(m[1] + 'T00:00:00Z');
+    assert.ok(!Number.isNaN(lastmod.getTime()), 'lastmod is not a valid date: ' + m[1]);
+    // Crawlers discount a sitemap that claims the future.
+    assert.ok(lastmod.getTime() <= Date.now(), 'lastmod is in the future: ' + m[1]);
 });
