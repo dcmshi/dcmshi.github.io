@@ -175,10 +175,12 @@ document.addEventListener('DOMContentLoaded', function() {
     Dog.prototype.setTop    = function(t) { this.el.style.top     = t + 'px'; this.el.style.bottom = ''; };
     Dog.prototype.remove    = function()  { this.el.remove(); };
 
-    // Returns a random y within the top or bottom third of the viewport (px from that edge)
-    function randomBand() {
+    // Returns a random y within the top or bottom band of the viewport (px from
+    // that edge). maxFrac caps how far in from the edge the dog can land —
+    // content is vertically centred, so a tighter band keeps clear of text.
+    function randomBand(maxFrac) {
         const inTop = Math.random() > 0.5;
-        const offset = Math.floor(Math.random() * (window.innerHeight * 0.28));
+        const offset = Math.floor(Math.random() * (window.innerHeight * (maxFrac || 0.28)));
         return { inTop, offset };
     }
 
@@ -276,7 +278,8 @@ document.addEventListener('DOMContentLoaded', function() {
         let sfi = 0;
         let phase = 'walk_in';
         const stopX = window.innerWidth * (0.15 + Math.random() * 0.7);
-        const { inTop, offset } = randomBand();
+        // A sleeping dog sits still long enough to be a nuisance — hug the edge
+        const { inTop, offset } = randomBand(0.12);
 
         dog.setX(x);
         if (inTop) dog.setTop(offset); else dog.setBottom(offset);
@@ -304,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     setTimeout(() => {
                         clearInterval(sleepTimer);
                         phase = 'walk_out';
-                    }, 3000 + Math.random() * 2000);
+                    }, 2000 + Math.random() * 1500);
                 }
             } else if (phase === 'walk_out') {
                 x += goRight ? WALK_SPEED : -WALK_SPEED;
