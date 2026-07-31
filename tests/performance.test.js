@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { ROOT, read, atRuleBlock } = require('./helpers');
+const { ROOT, read, atRuleBlock, functionBody } = require('./helpers');
 
 const html = read('index.html');
 const notFound = read('404.html');
@@ -16,6 +16,10 @@ test('sprites are cached, not cache-busted', () => {
     // Date.now() query string forces a re-download on every page load.
     assert.doesNotMatch(js, /\.src = [^;]*Date\.now\(\)/);
     assert.doesNotMatch(js, /\?v=/);
+});
+
+test('dog cameos do not spawn in a hidden tab', () => {
+    assert.match(functionBody(js, 'pick'), /document\.hidden/);
 });
 
 test('no font is downloaded that the site never renders', () => {

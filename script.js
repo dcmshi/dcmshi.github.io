@@ -635,7 +635,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const BEHAVIOURS = [spawnWalk, spawnWalk, spawnWalkAndTalk, spawnWalkAndSleep, spawnHolePeek];
 
     function pick() {
-        if (!ready) return;
+        // Nothing to see in a hidden tab, and the frame timers would keep
+        // ticking (throttled) for the whole cameo. Wait for the next slot.
+        if (!ready || document.hidden) return;
         BEHAVIOURS[Math.floor(Math.random() * BEHAVIOURS.length)]();
     }
 
