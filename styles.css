@@ -348,14 +348,18 @@ body {
 .project-tech {
     font-size: 16px;
     color: #888888;
-    margin-bottom: 15px;
+    margin-bottom: 7px;
 }
 
+/* Vertical padding takes these links to a ~40px touch target. The margins
+   above and beside them are trimmed to keep the original visual rhythm. */
 .project-link {
     font-size: 16px;
     color: #00ffff;
     text-decoration: none;
     display: inline-block;
+    padding: 8px 0;
+    margin-right: 16px;
     transition: color 0.2s ease;
 }
 
@@ -373,7 +377,7 @@ body {
 }
 
 .contact-list li {
-    margin-bottom: 20px;
+    margin-bottom: 0;
 }
 
 .contact-link {
@@ -381,6 +385,8 @@ body {
     font-size: 14px;
     color: #00ffff;
     text-decoration: none;
+    display: inline-block;
+    padding: 10px 0;
     transition: color 0.2s ease;
 }
 

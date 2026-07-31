@@ -5,6 +5,23 @@ const { read, rules, declaration, functionBody } = require('./helpers');
 const css = read('styles.css');
 const js = read('script.js');
 
+test('inline links are big enough to tap', () => {
+    // Both links inherit line-height from body; assert that before relying on it.
+    const lineHeight = Number(declaration(css, 'body', 'line-height'));
+    assert.equal(lineHeight, 1.6);
+
+    for (const selector of ['.project-link', '.contact-link']) {
+        assert.equal(declaration(css, selector, 'display'), 'inline-block',
+            selector + ' must be inline-block for padding to apply');
+
+        const fontSize = parseFloat(declaration(css, selector, 'font-size'));
+        const padding = parseFloat(declaration(css, selector, 'padding'));
+        const height = fontSize * lineHeight + padding * 2;
+        assert.ok(height >= 40,
+            `${selector} is only ${height.toFixed(1)}px tall; thumbs want ~44px`);
+    }
+});
+
 test('the skip link stacks above every sprite layer', () => {
     const skipLink = Number(declaration(css, '.skip-link', 'z-index'));
     const jsLayers = [...js.matchAll(/zIndex: '(\d+)'/g)].map(m => Number(m[1]));
