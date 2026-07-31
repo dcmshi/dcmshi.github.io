@@ -56,6 +56,9 @@ body {
 .container {
     max-width: 800px;
     width: 100%;
+    /* The sections centre their container with justify-content, but the footer
+       is a plain block — without this it hugs the left edge past 840px wide. */
+    margin: 0 auto;
 }
 
 /* ========================================

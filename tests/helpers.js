@@ -128,6 +128,38 @@ function mediaBlock(css, queryFragment) {
     return '';
 }
 
+const VOID_TAGS = new Set([
+    'area', 'base', 'br', 'col', 'embed', 'hr',
+    'img', 'input', 'link', 'meta', 'source', 'track', 'wbr',
+]);
+
+// Returns the opening tag of the parent of every element carrying `className`,
+// e.g. '<footer class="footer">'. A plain tag-stack walk — the site is
+// hand-written HTML with no templating, so there is nothing to expand first.
+function parentTagsOf(html, className) {
+    const clean = html.replace(/<!--[\s\S]*?-->/g, '');
+    const hasClass = new RegExp('class="[^"]*\\b' + className + '\\b[^"]*"');
+    const tagRe = /<(\/?)([a-zA-Z][a-zA-Z0-9]*)\b([^>]*?)(\/?)>/g;
+    const stack = [];
+    const parents = [];
+    let m;
+    while ((m = tagRe.exec(clean)) !== null) {
+        const [full, closing, rawName, attrs, selfClosing] = m;
+        const tag = rawName.toLowerCase();
+        if (closing) {
+            for (let i = stack.length - 1; i >= 0; i--) {
+                if (stack[i].tag === tag) { stack.length = i; break; }
+            }
+            continue;
+        }
+        if (hasClass.test(attrs)) {
+            parents.push(stack.length ? stack[stack.length - 1].full : null);
+        }
+        if (!VOID_TAGS.has(tag) && !selfClosing) stack.push({ tag, full });
+    }
+    return parents;
+}
+
 // Returns the body of `function <name>(...)` or `<name> = function(...)` from JS
 // source, brace-matched. Lets a test scope its assertions to one function.
 function functionBody(js, name) {
@@ -172,6 +204,7 @@ module.exports = {
     declaration,
     atRuleBlock,
     mediaBlock,
+    parentTagsOf,
     functionBody,
     contrastRatio,
 };
