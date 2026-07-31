@@ -138,6 +138,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ---- Dog entity ----
     function Dog() {
         this.el = document.createElement('div');
+        this.el.setAttribute('aria-hidden', 'true');
         Object.assign(this.el.style, {
             position: 'fixed',
             bottom: '0',
@@ -405,6 +406,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Rope
         const ropeEl = document.createElement('div');
+        ropeEl.setAttribute('aria-hidden', 'true');
         Object.assign(ropeEl.style, {
             position: 'absolute',
             left: '50%',
@@ -416,6 +418,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Dog canvas
         const dogCanvas = document.createElement('canvas');
+        dogCanvas.setAttribute('aria-hidden', 'true');
         dogCanvas.width  = dogW;
         dogCanvas.height = dogH;
         Object.assign(dogCanvas.style, {
@@ -465,6 +468,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const rest  = (restTop !== null) ? restTop : viewH - H;
 
             const c = document.createElement('canvas');
+            c.setAttribute('aria-hidden', 'true');
             c.width  = W;
             c.height = H;
             Object.assign(c.style, {

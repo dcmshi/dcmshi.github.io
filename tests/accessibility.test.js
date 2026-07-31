@@ -23,6 +23,21 @@ test('collapsed project bodies stay visible for the whole collapse transition', 
     assert.match(collapsed, /max-height 0\.35s/);
 });
 
+test('decorative sprite canvases are hidden from assistive tech', () => {
+    assert.match(
+        functionBody(js, 'Dog'),
+        /this\.el\.setAttribute\('aria-hidden', 'true'\)/
+    );
+    const gauntlet = functionBody(js, 'spawnGauntlet');
+    for (const el of ['ropeEl', 'dogCanvas', 'c']) {
+        assert.match(
+            gauntlet,
+            new RegExp(el + "\\.setAttribute\\('aria-hidden', 'true'\\)"),
+            el + ' is decorative and must be aria-hidden'
+        );
+    }
+});
+
 test('gauntlet overlay traps and restores focus', () => {
     const body = functionBody(js, 'spawnGauntlet');
     assert.match(body, /previouslyFocused = document\.activeElement/);
