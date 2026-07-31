@@ -108,10 +108,11 @@ function mediaBlock(css, queryFragment) {
     return '';
 }
 
-// Returns the body of `function <name>(...)` from JS source, brace-matched.
-// Lets a test scope its assertions to one function instead of the whole file.
+// Returns the body of `function <name>(...)` or `<name> = function(...)` from JS
+// source, brace-matched. Lets a test scope its assertions to one function.
 function functionBody(js, name) {
-    const start = js.indexOf('function ' + name);
+    let start = js.indexOf('function ' + name);
+    if (start === -1) start = js.indexOf(name + ' = function');
     if (start === -1) throw new Error('function not found: ' + name);
     const open = js.indexOf('{', start);
     let depth = 0;

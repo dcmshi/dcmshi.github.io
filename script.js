@@ -96,6 +96,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let ready = false;
     // Pre-rendered source canvases: prerendered[animName][dir][frameIdx]
     const prerendered = {};
+    // Widest frame per animation, so the canvas can stay a fixed size
+    const MAX_FRAME_W = {};
 
     // Gauntlet obstacle sprite sheet
     const GAUNTLET_SPRITE_SRC = 'images/gauntlet-of-deadly-terror.png';
@@ -122,6 +124,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function prerender() {
         for (const [name, anim] of Object.entries(ANIMS)) {
             prerendered[name] = { right: [], left: [] };
+            MAX_FRAME_W[name] = Math.max(...anim.frames.map(f => f.w));
             for (const frame of anim.frames) {
                 for (const dir of ['right', 'left']) {
                     const c = document.createElement('canvas');
@@ -161,11 +164,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const anim = ANIMS[animName];
         const frame = anim.frames[fi];
         const src = prerendered[animName][dir][fi];
-        const maxW = Math.max(...anim.frames.map(f => f.w));
-        this.canvas.width = maxW * SCALE;
-        this.canvas.height = anim.h * SCALE;
+        const w = MAX_FRAME_W[animName] * SCALE;
+        const h = anim.h * SCALE;
+        // Assigning width/height wipes the context, so only do it on a real
+        // size change — a dog switching between walk, talk and sleep
+        if (this.canvas.width !== w || this.canvas.height !== h) {
+            this.canvas.width = w;
+            this.canvas.height = h;
+        }
         const ctx = this.canvas.getContext('2d');
-        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        ctx.clearRect(0, 0, w, h);
         ctx.imageSmoothingEnabled = false;
         ctx.drawImage(src, 0, 0, frame.w * SCALE, anim.h * SCALE);
     };
@@ -191,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const goRight = Math.random() > 0.5;
         const dir = goRight ? 'left' : 'right'; // sprite faces left by default, flip for rightward walk
         const dog = new Dog();
-        const maxW = Math.max(...ANIMS.walk.frames.map(f => f.w)) * SCALE;
+        const maxW = MAX_FRAME_W.walk * SCALE;
         let x = goRight ? -maxW : window.innerWidth;
         let fi = 0;
         const { inTop, offset } = randomBand();
@@ -221,7 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const goRight = Math.random() > 0.5;
         const dir = goRight ? 'left' : 'right';
         const dog = new Dog();
-        const maxW = Math.max(...ANIMS.walk.frames.map(f => f.w)) * SCALE;
+        const maxW = MAX_FRAME_W.walk * SCALE;
         let x = goRight ? -maxW : window.innerWidth;
         let fi = 0;
         let tfi = 0;
@@ -272,7 +280,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const goRight = Math.random() > 0.5;
         const dir = goRight ? 'left' : 'right';
         const dog = new Dog();
-        const maxW = Math.max(...ANIMS.walk.frames.map(f => f.w)) * SCALE;
+        const maxW = MAX_FRAME_W.walk * SCALE;
         let x = goRight ? -maxW : window.innerWidth;
         let fi = 0;
         let sfi = 0;
@@ -361,8 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const G_SCALE   = SCALE * 2; // 6x — bigger for drama
         const anim      = ANIMS.gauntlet;
-        const maxFrameW = Math.max(...anim.frames.map(f => f.w));
-        const dogW      = maxFrameW * G_SCALE;
+        const dogW      = MAX_FRAME_W.gauntlet * G_SCALE;
         const dogH      = anim.h * G_SCALE;
         const viewW     = window.innerWidth;
         const viewH     = window.innerHeight;
