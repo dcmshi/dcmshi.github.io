@@ -39,6 +39,26 @@ function stripAtRuleBlocks(css) {
     return out;
 }
 
+// Every top-level rule as { selector, declarations }, one entry per selector in
+// a comma-separated list.
+function allRules(css) {
+    const out = [];
+    const re = /([^{}]+)\{([^{}]*)\}/g;
+    let m;
+    while ((m = re.exec(stripAtRuleBlocks(stripCssComments(css)))) !== null) {
+        const declarations = {};
+        for (const decl of m[2].split(';')) {
+            const idx = decl.indexOf(':');
+            if (idx === -1) continue;
+            declarations[decl.slice(0, idx).trim()] = decl.slice(idx + 1).trim();
+        }
+        for (const selector of m[1].split(',')) {
+            out.push({ selector: selector.trim().replace(/\s+/g, ' '), declarations });
+        }
+    }
+    return out;
+}
+
 // Returns the declaration block bodies for every rule whose selector list
 // contains `selector` exactly (as one of its comma-separated parts).
 function rules(css, selector) {
@@ -147,6 +167,7 @@ function contrastRatio(fg, bg) {
 module.exports = {
     ROOT,
     read,
+    allRules,
     rules,
     declaration,
     atRuleBlock,
