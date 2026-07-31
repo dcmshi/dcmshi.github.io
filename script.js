@@ -49,8 +49,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('keydown', function(e) {
         // Don't hijack keys aimed at a focused link or button
         if (e.target.closest && e.target.closest('a, button, [role="button"]')) return;
-        // Press 'S' or Enter on title screen to scroll to About
-        if ((e.key === 's' || e.key === 'S' || e.key === 'Enter') && window.scrollY < 100) {
+        // Press 'S' on the title screen to scroll to About. Enter used to work
+        // too, but hijacking it surprised keyboard and screen reader users.
+        if ((e.key === 's' || e.key === 'S') && window.scrollY < 100) {
             const aboutSection = document.querySelector('#about');
             if (aboutSection) {
                 aboutSection.scrollIntoView({ block: 'start' });

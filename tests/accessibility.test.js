@@ -38,6 +38,11 @@ test('reduced motion skips the max-height pin that a transitionend would release
     assert.match(toggle, /if \(!reducedMotion\(\)\)/);
 });
 
+test('the global shortcut does not hijack Enter', () => {
+    const shortcut = js.match(/if \(\(e\.key === 's'[^)]*\) && window\.scrollY < 100\)/)[0];
+    assert.doesNotMatch(shortcut, /Enter/);
+});
+
 test('decorative sprite canvases are hidden from assistive tech', () => {
     assert.match(
         functionBody(js, 'Dog'),
