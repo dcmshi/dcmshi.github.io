@@ -21,6 +21,21 @@ A retro pixel-art inspired personal portfolio website with an Undertale/Deltarun
 
 Simply open `index.html` in your browser. No build process required.
 
+## Tests
+
+```
+node --test
+```
+
+Requires Node 18+ and nothing else — the suite uses the built-in test runner,
+so the project stays dependency-free. The tests read `index.html`, `styles.css`
+and `script.js` as text and assert on the things that are easy to break by
+accident: WCAG contrast ratios computed from the declared colours, touch-target
+sizes, ARIA wiring on the accordion, `og:image` dimensions checked against the
+real PNG header, and a lint for CSS rules that restate what they inherit.
+
+They do not cover animation timing or anything else that needs a live browser.
+
 ## Making Changes
 
 - **Projects** live in the projects section of `index.html` — each is a self-contained `.project-item` block; copy one to add a new project.
@@ -39,13 +54,17 @@ personal_website/
 ├── 404.html             # Custom GitHub Pages 404
 ├── styles.css           # All styling
 ├── script.js            # Project accordion, annoying dog, easter egg
-├── fonts/               # Determination Mono font files
+├── fonts/
+│   ├── DTM-Mono.woff2   # Determination Mono (what the site loads)
+│   ├── DTM-Mono.ttf     # Fallback, and the source for the WOFF2
 │   └── README.md        # Font setup instructions
 ├── images/
 │   ├── annoying-dog.png              # Dog sprite sheet (transparent PNG)
 │   ├── gauntlet-of-deadly-terror.png # Obstacle sprite sheet
-│   ├── favicon.png                   # Pixel heart favicon
+│   ├── favicon.png                   # Annoying dog favicon
+│   ├── apple-touch-icon.png          # 180x180 iOS home screen icon
 │   └── og-banner.png                 # Link-preview banner
+├── tests/               # node --test suite (no dependencies)
 └── README.md            # This file
 ```
 
