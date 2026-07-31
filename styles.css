@@ -44,6 +44,9 @@ body {
 
 .section {
     min-height: 100vh;
+    /* svh excludes mobile browser chrome, so the first screen isn't overtall.
+       Kept after the vh fallback for browsers that don't know the unit. */
+    min-height: 100svh;
     display: flex;
     align-items: center;
     justify-content: center;
