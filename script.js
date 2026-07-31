@@ -676,5 +676,5 @@ document.addEventListener('DOMContentLoaded', function() {
     gauntletSprite.onerror = function() {
         console.warn('gauntlet-of-deadly-terror.png failed to load — easter egg disabled.');
     };
-    gauntletSprite.src = GAUNTLET_SPRITE_SRC + '?v=' + Date.now();
+    gauntletSprite.src = GAUNTLET_SPRITE_SRC;
 })();
