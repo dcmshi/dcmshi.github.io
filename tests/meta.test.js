@@ -67,6 +67,16 @@ test('og:image has alt text', () => {
     assert.ok(alt && alt.length > 10, 'og:image:alt should describe the banner');
 });
 
+test('the Search Console verification file matches its own filename', () => {
+    // Google fetches /<token>.html and expects the body to name that same file.
+    // It re-checks periodically, so deleting or editing this silently
+    // un-verifies the property — hence the guard. It is deliberately not valid
+    // HTML despite the extension; Google only looks for the token line.
+    const found = fs.readdirSync(ROOT).filter(n => /^google[0-9a-f]+\.html$/.test(n));
+    assert.equal(found.length, 1, 'expected one verification file, found: ' + found.join(', '));
+    assert.equal(read(found[0]).trim(), 'google-site-verification: ' + found[0]);
+});
+
 test('robots.txt keeps the site crawlable', () => {
     // Directives, minus comments and blank lines, as [field, value] pairs.
     const directives = robots

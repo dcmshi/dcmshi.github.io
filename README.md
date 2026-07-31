@@ -57,6 +57,8 @@ personal_website/
 ├── script.js            # Project accordion, annoying dog, easter egg
 ├── robots.txt           # Crawlable, and points at the sitemap
 ├── sitemap.xml          # One entry: the canonical home page URL
+├── google*.html         # Search Console ownership proof — do not delete,
+│                        #   Google re-checks it and will un-verify the site
 ├── fonts/
 │   ├── DTM-Mono.woff2   # Determination Mono (what the site loads)
 │   ├── DTM-Mono.ttf     # Fallback, and the source for the WOFF2
