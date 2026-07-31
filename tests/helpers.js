@@ -69,6 +69,23 @@ function mediaBlock(css, queryFragment) {
     return '';
 }
 
+// Returns the body of `function <name>(...)` from JS source, brace-matched.
+// Lets a test scope its assertions to one function instead of the whole file.
+function functionBody(js, name) {
+    const start = js.indexOf('function ' + name);
+    if (start === -1) throw new Error('function not found: ' + name);
+    const open = js.indexOf('{', start);
+    let depth = 0;
+    for (let i = open; i < js.length; i++) {
+        if (js[i] === '{') depth++;
+        else if (js[i] === '}') {
+            depth--;
+            if (depth === 0) return js.slice(open + 1, i);
+        }
+    }
+    throw new Error('unbalanced braces in: ' + name);
+}
+
 // WCAG 2.1 relative luminance and contrast ratio.
 function luminance(hex) {
     const h = hex.replace('#', '');
@@ -93,5 +110,6 @@ module.exports = {
     rules,
     declaration,
     mediaBlock,
+    functionBody,
     contrastRatio,
 };

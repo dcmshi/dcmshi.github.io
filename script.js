@@ -431,6 +431,25 @@ document.addEventListener('DOMContentLoaded', function() {
         overlay.appendChild(dogCanvas);
         document.body.appendChild(overlay);
 
+        // Modal focus handling: park focus on the dialog, make everything else
+        // inert so keyboard and screen reader users can't reach the page behind
+        // it, and put focus back where it started on dismiss.
+        const previouslyFocused = document.activeElement;
+        const inerted = [];
+        Array.from(document.body.children).forEach(node => {
+            if (node !== overlay && !node.inert) {
+                node.inert = true;
+                inerted.push(node);
+            }
+        });
+        overlay.tabIndex = -1;
+        overlay.focus();
+
+        function releaseFocus() {
+            inerted.forEach(node => { node.inert = false; });
+            if (previouslyFocused && previouslyFocused.focus) previouslyFocused.focus();
+        }
+
         // ---- Obstacle helpers ----
         const obstacleDisposeFns = [];
         const retreatFns         = [];
@@ -586,12 +605,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     clearInterval(frameTick);
                     obstacleDisposeFns.forEach(fn => fn());
                     document.removeEventListener('keydown', onKey);
+                    releaseFocus();
                     overlay.style.opacity = '0';
                     setTimeout(() => { overlay.remove(); }, 400);
                 }
 
                 overlay.addEventListener('click', dismiss);
-                function onKey(e) { if (e.key === 'Escape') dismiss(); }
+                function onKey(e) {
+                    if (e.key === 'Escape') dismiss();
+                    // The dialog holds no focusable controls — swallow Tab so
+                    // focus can't wander out of the modal.
+                    if (e.key === 'Tab') e.preventDefault();
+                }
                 document.addEventListener('keydown', onKey);
             });
         });
