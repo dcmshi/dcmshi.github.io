@@ -27,6 +27,17 @@ function localFileFor(url) {
     return url.slice(SITE_ORIGIN.length + 1);
 }
 
+test('both pages ship a full-size apple-touch-icon', () => {
+    for (const [name, page, prefix] of [['index.html', html, ''], ['404.html', notFound, '/']]) {
+        const m = page.match(/<link rel="apple-touch-icon" href="([^"]*)"/);
+        assert.ok(m, name + ' is missing apple-touch-icon');
+        assert.equal(m[1], prefix + 'images/apple-touch-icon.png');
+    }
+    // iOS renders the home screen icon at 180x180; the 66x66 favicon is too
+    // small and gets upscaled into mush.
+    assert.deepEqual(pngSize('images/apple-touch-icon.png'), { width: 180, height: 180 });
+});
+
 test('theme-color matches the page background on every page', () => {
     const background = declaration(css, 'body', 'background-color');
     for (const [name, page] of [['index.html', html], ['404.html', notFound]]) {
