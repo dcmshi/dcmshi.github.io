@@ -68,3 +68,23 @@ test('gauntlet overlay traps and restores focus', () => {
     assert.match(body, /releaseFocus\(\)/);
     assert.match(body, /e\.key === 'Tab'/);
 });
+
+test('the gauntlet can always be dismissed, even if no frame ever renders', () => {
+    const body = functionBody(js, 'spawnGauntlet');
+    // The page is made inert synchronously. If the dismiss handlers were
+    // registered inside the requestAnimationFrame chain and those frames never
+    // arrived, the whole page would stay inert with no way out.
+    const inertAt = body.indexOf('node.inert = true');
+    const keyListenerAt = body.indexOf("document.addEventListener('keydown', onKey)");
+    const clickListenerAt = body.indexOf("overlay.addEventListener('click', dismiss)");
+    const firstFrameAt = body.indexOf('requestAnimationFrame(');
+
+    assert.ok(inertAt !== -1 && firstFrameAt !== -1);
+    assert.ok(keyListenerAt !== -1 && keyListenerAt < firstFrameAt,
+        'Escape must be wired up before the animation frames');
+    assert.ok(clickListenerAt !== -1 && clickListenerAt < firstFrameAt,
+        'click-to-dismiss must be wired up before the animation frames');
+
+    // And a late frame must not restart an already-dismissed overlay.
+    assert.match(body, /if \(dismissed\) return;/);
+});

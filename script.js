@@ -468,6 +468,34 @@ document.addEventListener('DOMContentLoaded', function() {
             if (previouslyFocused && previouslyFocused.focus) previouslyFocused.focus();
         }
 
+        // Dismissal is wired up here, synchronously, rather than inside the
+        // animation's requestAnimationFrame chain. The page is already inert at
+        // this point, so if those frames never arrive (a backgrounded tab, a
+        // thrown error) Escape and click must still be able to release it.
+        const cleanupFns = [];
+        let dismissed = false;
+
+        function dismiss() {
+            if (dismissed) return;
+            dismissed = true;
+            cleanupFns.forEach(fn => fn());
+            obstacleDisposeFns.forEach(fn => fn());
+            document.removeEventListener('keydown', onKey);
+            releaseFocus();
+            overlay.style.opacity = '0';
+            setTimeout(() => { overlay.remove(); }, 400);
+        }
+
+        function onKey(e) {
+            if (e.key === 'Escape') dismiss();
+            // The dialog holds no focusable controls — swallow Tab so
+            // focus can't wander out of the modal.
+            if (e.key === 'Tab') e.preventDefault();
+        }
+
+        overlay.addEventListener('click', dismiss);
+        document.addEventListener('keydown', onKey);
+
         // ---- Obstacle helpers ----
         const obstacleDisposeFns = [];
         const retreatFns         = [];
@@ -565,8 +593,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Fade in → measure title → start all animations
         requestAnimationFrame(() => {
+            if (dismissed) return;
             overlay.style.opacity = '1';
             requestAnimationFrame(() => {
+                if (dismissed) return;
                 const titleBottom = titleEl.getBoundingClientRect().bottom;
                 const ropeTopY    = Math.round(titleBottom + 20);
                 const targetY     = viewH * 0.72;
@@ -615,28 +645,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 requestAnimationFrame(animStep);
 
-                let dismissed = false;
-                function dismiss() {
-                    if (dismissed) return;
-                    dismissed = true;
+                // Hand the animation's own teardown to the dismiss wired up above
+                cleanupFns.push(function() {
                     running = false;
                     if (idleTimer) clearTimeout(idleTimer);
                     clearInterval(frameTick);
-                    obstacleDisposeFns.forEach(fn => fn());
-                    document.removeEventListener('keydown', onKey);
-                    releaseFocus();
-                    overlay.style.opacity = '0';
-                    setTimeout(() => { overlay.remove(); }, 400);
-                }
-
-                overlay.addEventListener('click', dismiss);
-                function onKey(e) {
-                    if (e.key === 'Escape') dismiss();
-                    // The dialog holds no focusable controls — swallow Tab so
-                    // focus can't wander out of the modal.
-                    if (e.key === 'Tab') e.preventDefault();
-                }
-                document.addEventListener('keydown', onKey);
+                });
             });
         });
     }
