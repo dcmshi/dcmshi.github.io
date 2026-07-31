@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', function() {
             bottom: '24px',
             left: '0', right: '0',
             fontFamily: "'Press Start 2P', monospace",
-            color: '#333333',
+            color: '#888888',
             fontSize: '8px',
             textAlign: 'center',
         });

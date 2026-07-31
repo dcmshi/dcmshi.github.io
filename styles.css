@@ -309,7 +309,7 @@ body {
 
 .expand-indicator {
     font-size: 11px;
-    color: #555555;
+    color: #888888;
     flex-shrink: 0;
     margin-left: 12px;
 }
@@ -401,7 +401,7 @@ body {
 }
 
 .footer-credit {
-    color: #666666;
+    color: #888888;
 }
 
 /* ========================================
@@ -477,7 +477,7 @@ body {
     top: -40px;
     left: 0;
     background: #ff0000;
-    color: white;
+    color: #000000;
     padding: 8px;
     text-decoration: none;
     z-index: 100;
