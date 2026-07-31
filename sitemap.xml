@@ -4,15 +4,14 @@
   fragments of this same document, not separate URLs, so they don't belong here.
   404.html is noindex and is likewise omitted.
 
-  changefreq and priority are deliberately absent: Google ignores both, and
-  priority is meaningless in a single-URL sitemap.
-
-  lastmod is a hint to crawlers, so keep it honest — bump it when index.html
-  changes in a way a search engine should care about.
+  changefreq, priority and lastmod are all deliberately absent. Google ignores
+  the first two, and priority is meaningless in a single-URL sitemap. lastmod
+  would have to be updated by hand on every content change, and a stale date is
+  a worse signal than no date — if it's ever wanted, generate it from the commit
+  date in CI rather than typing it in.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
         <loc>https://dcmshi.github.io/</loc>
-        <lastmod>2026-07-31</lastmod>
     </url>
 </urlset>

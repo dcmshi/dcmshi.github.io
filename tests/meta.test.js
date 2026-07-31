@@ -106,14 +106,3 @@ test('the sitemap lists the canonical URL and nothing else', () => {
     // like 404.html out, since any extra <loc> fails here.
     assert.deepEqual(locs, [canonical]);
 });
-
-test('the sitemap lastmod is a real, non-future date', () => {
-    const m = sitemap.match(/<lastmod>([^<]*)<\/lastmod>/);
-    assert.ok(m, 'expected a lastmod');
-    // W3C Datetime, which for a date-only value means exactly YYYY-MM-DD.
-    assert.match(m[1], /^\d{4}-\d{2}-\d{2}$/);
-    const lastmod = new Date(m[1] + 'T00:00:00Z');
-    assert.ok(!Number.isNaN(lastmod.getTime()), 'lastmod is not a valid date: ' + m[1]);
-    // Crawlers discount a sitemap that claims the future.
-    assert.ok(lastmod.getTime() <= Date.now(), 'lastmod is in the future: ' + m[1]);
-});
