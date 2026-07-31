@@ -27,6 +27,13 @@ function localFileFor(url) {
     return url.slice(SITE_ORIGIN.length + 1);
 }
 
+test('the canonical URL agrees with og:url', () => {
+    const canonical = html.match(/<link rel="canonical" href="([^"]*)"/)[1];
+    assert.equal(canonical, meta('property', 'og:url'));
+    // 404.html is noindex, so a canonical there would only confuse crawlers.
+    assert.doesNotMatch(notFound, /rel="canonical"/);
+});
+
 test('both pages ship a full-size apple-touch-icon', () => {
     for (const [name, page, prefix] of [['index.html', html, ''], ['404.html', notFound, '/']]) {
         const m = page.match(/<link rel="apple-touch-icon" href="([^"]*)"/);
