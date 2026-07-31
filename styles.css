@@ -125,13 +125,16 @@ body {
     min-width: 20px;
 }
 
-/* Press Start Text */
+/* Press Start Text — a real <button>, stripped back to look like body copy */
 .press-start {
+    font: inherit;
     font-size: 16px;
     color: #888888;
     margin-top: 40px;
     cursor: pointer;
     user-select: none;
+    background: none;
+    border: none;
 }
 
 .press-start:hover {
@@ -140,11 +143,6 @@ body {
 
 .press-start:active {
     color: #ff0000;
-}
-
-.press-start:focus {
-    outline: 2px solid #ffff00;
-    outline-offset: 4px;
 }
 
 .cursor {
@@ -287,16 +285,22 @@ body {
     font-size: 14px;
     color: #ff0000;
     margin-bottom: 0;
+}
+
+/* The heading is the label; the button inside it is the accordion control.
+   Focus styling comes from the shared button:focus rule. */
+.project-toggle {
+    font: inherit;
+    color: inherit;
+    width: 100%;
+    text-align: left;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
     user-select: none;
-}
-
-.project-name:focus {
-    outline: 2px solid #ffff00;
-    outline-offset: 4px;
+    background: none;
+    border: none;
 }
 
 .project-item.expanded .project-name {

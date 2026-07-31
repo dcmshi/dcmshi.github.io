@@ -7,12 +7,11 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     // Project accordion — click to expand/collapse each project card
-    document.querySelectorAll('.project-name').forEach(function(nameEl) {
-        var item = nameEl.closest('.project-item');
+    document.querySelectorAll('.project-toggle').forEach(function(toggleEl) {
+        var item = toggleEl.closest('.project-item');
         var body = item.querySelector('.project-body');
-        nameEl.setAttribute('aria-expanded', 'false');
         function toggle() {
-            var indicator = nameEl.querySelector('.expand-indicator');
+            var indicator = toggleEl.querySelector('.expand-indicator');
             var expanded = !item.classList.contains('expanded');
             if (expanded) {
                 item.classList.add('expanded');
@@ -26,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 body.style.maxHeight = '0';
             }
             indicator.textContent = expanded ? '[-]' : '[+]';
-            nameEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            toggleEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
         }
         // Once fully expanded, release the fixed max-height so the card
         // reflows naturally if the viewport resizes while open
@@ -35,10 +34,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 body.style.maxHeight = 'none';
             }
         });
-        nameEl.addEventListener('click', toggle);
-        nameEl.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
-        });
+        // A real <button> already fires click on Enter and Space.
+        toggleEl.addEventListener('click', toggle);
     });
 
     // Keyboard navigation support
@@ -654,12 +651,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const pressStartEl = document.querySelector('.press-start');
-        if (pressStartEl) {
-            pressStartEl.addEventListener('click', spawnGauntlet);
-            pressStartEl.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); spawnGauntlet(); }
-            });
-        }
+        if (pressStartEl) pressStartEl.addEventListener('click', spawnGauntlet);
 
         if (pendingGauntlet && gauntletReady) spawnGauntlet();
     };

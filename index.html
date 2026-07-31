@@ -41,7 +41,7 @@
                 </ul>
             </nav>
 
-            <p class="press-start" role="button" tabindex="0">Press Start<span class="cursor" aria-hidden="true">_</span></p>
+            <button type="button" class="press-start">Press Start<span class="cursor" aria-hidden="true">_</span></button>
         </div>
     </section>
 
@@ -83,8 +83,8 @@
 
                     <div class="project-list">
                         <div class="project-item">
-                            <h3 class="project-name" role="button" tabindex="0"><span aria-hidden="true">> </span>GO Transit Reliability Router <span class="expand-indicator" aria-hidden="true">[+]</span></h3>
-                            <div class="project-body">
+                            <h3 class="project-name"><button type="button" class="project-toggle" aria-expanded="false" aria-controls="project-go-transit"><span aria-hidden="true">> </span>GO Transit Reliability Router <span class="expand-indicator" aria-hidden="true">[+]</span></button></h3>
+                            <div class="project-body" id="project-go-transit">
                                 <p class="project-desc">Reliability-first trip planner for GO Transit buses. Ranks routes by real-world likelihood of working, not just scheduled time. Accounts for no-shows, alerts, and risky transfers.</p>
                                 <p class="project-tech">Python · FastAPI · Next.js · TypeScript · PostgreSQL · GTFS-RT</p>
                                 <a href="https://github.com/dcmshi/transit_planner_frontend" class="project-link" target="_blank" rel="noopener">[Frontend →]</a>
@@ -93,8 +93,8 @@
                         </div>
 
                         <div class="project-item">
-                            <h3 class="project-name" role="button" tabindex="0"><span aria-hidden="true">> </span>Olympic Weightlifting Program Generator <span class="expand-indicator" aria-hidden="true">[+]</span></h3>
-                            <div class="project-body">
+                            <h3 class="project-name"><button type="button" class="project-toggle" aria-expanded="false" aria-controls="project-oly-program"><span aria-hidden="true">> </span>Olympic Weightlifting Program Generator <span class="expand-indicator" aria-hidden="true">[+]</span></button></h3>
+                            <div class="project-body" id="project-oly-program">
                                 <p class="project-desc">AI-powered training program generator for Olympic weightlifting. Ingests coaching literature into a hybrid vector + structured database, then generates personalised mesocycle programs grounded in Prilepin's chart, extracted programming principles, and athlete-specific maxes and goals.</p>
                                 <p class="project-tech">Python · OpenAI · Anthropic · RAG · HTML</p>
                                 <a href="https://github.com/dcmshi/oly-program-generator" class="project-link" target="_blank" rel="noopener">[GitHub →]</a>
@@ -102,8 +102,8 @@
                         </div>
 
                         <div class="project-item">
-                            <h3 class="project-name" role="button" tabindex="0"><span aria-hidden="true">> </span>System Design MCQ Generator <span class="expand-indicator" aria-hidden="true">[+]</span></h3>
-                            <div class="project-body">
+                            <h3 class="project-name"><button type="button" class="project-toggle" aria-expanded="false" aria-controls="project-mcq-generator"><span aria-hidden="true">> </span>System Design MCQ Generator <span class="expand-indicator" aria-hidden="true">[+]</span></button></h3>
+                            <div class="project-body" id="project-mcq-generator">
                                 <p class="project-desc">Converts system design articles into multiple-choice questions using a local LLM. Deterministic pipeline with chunking, dedup, and a FastAPI + single-file web UI.</p>
                                 <p class="project-tech">Python · uv · Ollama · SQLite · FastAPI</p>
                                 <a href="https://github.com/dcmshi/system-design-quizzer" class="project-link" target="_blank" rel="noopener">[GitHub →]</a>
@@ -111,8 +111,8 @@
                         </div>
 
                         <div class="project-item">
-                            <h3 class="project-name" role="button" tabindex="0"><span aria-hidden="true">> </span>Chinese Anki Builder <span class="expand-indicator" aria-hidden="true">[+]</span></h3>
-                            <div class="project-body">
+                            <h3 class="project-name"><button type="button" class="project-toggle" aria-expanded="false" aria-controls="project-chinese-anki"><span aria-hidden="true">> </span>Chinese Anki Builder <span class="expand-indicator" aria-hidden="true">[+]</span></button></h3>
+                            <div class="project-body" id="project-chinese-anki">
                                 <p class="project-desc">Generate Anki flashcard decks from Chinese EPUB/PDF books using jieba, CC-CEDICT, and pypinyin.</p>
                                 <p class="project-tech">Python · jieba · genanki · pypinyin · CC-CEDICT</p>
                                 <a href="https://github.com/dcmshi/chinese-anki-builder" class="project-link" target="_blank" rel="noopener">[GitHub →]</a>
@@ -120,8 +120,8 @@
                         </div>
 
                         <div class="project-item">
-                            <h3 class="project-name" role="button" tabindex="0"><span aria-hidden="true">> </span>Plate Converter <span class="expand-indicator" aria-hidden="true">[+]</span></h3>
-                            <div class="project-body">
+                            <h3 class="project-name"><button type="button" class="project-toggle" aria-expanded="false" aria-controls="project-plate-converter"><span aria-hidden="true">> </span>Plate Converter <span class="expand-indicator" aria-hidden="true">[+]</span></button></h3>
+                            <div class="project-body" id="project-plate-converter">
                                 <p class="project-desc">Barbell plate calculator for both kg and lbs. Enter a target weight, get the exact plates to load. No fuss.</p>
                                 <p class="project-tech">React · TypeScript · Vite · Tailwind CSS</p>
                                 <a href="https://github.com/dcmshi/plate-converter" class="project-link" target="_blank" rel="noopener">[GitHub →]</a>
@@ -130,8 +130,8 @@
                         </div>
 
                         <div class="project-item">
-                            <h3 class="project-name" role="button" tabindex="0"><span aria-hidden="true">> </span>Set <span class="expand-indicator" aria-hidden="true">[+]</span></h3>
-                            <div class="project-body">
+                            <h3 class="project-name"><button type="button" class="project-toggle" aria-expanded="false" aria-controls="project-set"><span aria-hidden="true">> </span>Set <span class="expand-indicator" aria-hidden="true">[+]</span></button></h3>
+                            <div class="project-body" id="project-set">
                                 <p class="project-desc">Single-player, timed take on the card game Set. Race the clock to clear all 81 cards by spotting valid trios — where each attribute (number, shape, shading, colour) is all-same or all-different. Wrong picks and hints add time penalties; best times persist in your browser.</p>
                                 <p class="project-tech">React · TypeScript · Vite · CSS</p>
                                 <a href="https://github.com/dcmshi/set-game" class="project-link" target="_blank" rel="noopener">[GitHub →]</a>
@@ -140,8 +140,8 @@
                         </div>
 
                         <div class="project-item">
-                            <h3 class="project-name" role="button" tabindex="0"><span aria-hidden="true">> </span>Django Sudoku Solver <span class="expand-indicator" aria-hidden="true">[+]</span></h3>
-                            <div class="project-body">
+                            <h3 class="project-name"><button type="button" class="project-toggle" aria-expanded="false" aria-controls="project-django-sudoku"><span aria-hidden="true">> </span>Django Sudoku Solver <span class="expand-indicator" aria-hidden="true">[+]</span></button></h3>
+                            <div class="project-body" id="project-django-sudoku">
                                 <p class="project-desc">Sudoku puzzle solver with a playable browser interface. Enter a puzzle, get the solution.</p>
                                 <p class="project-tech">Python · Django</p>
                                 <a href="https://github.com/dcmshi/django-sudoku-solver" class="project-link" target="_blank" rel="noopener">[GitHub →]</a>
@@ -150,8 +150,8 @@
                         </div>
 
                         <div class="project-item">
-                            <h3 class="project-name" role="button" tabindex="0"><span aria-hidden="true">> </span>Bust-A-Move <span class="expand-indicator" aria-hidden="true">[+]</span></h3>
-                            <div class="project-body">
+                            <h3 class="project-name"><button type="button" class="project-toggle" aria-expanded="false" aria-controls="project-bust-a-move"><span aria-hidden="true">> </span>Bust-A-Move <span class="expand-indicator" aria-hidden="true">[+]</span></button></h3>
+                            <div class="project-body" id="project-bust-a-move">
                                 <p class="project-desc">Port of an old-school arcade bubble-shooter. Match 3+ same-colored bubbles, clear the board. 12 levels, hex grid, recursive color-matching, dynamic music.</p>
                                 <p class="project-tech">JavaScript · HTML5</p>
                                 <a href="https://github.com/dcmshi/bust-a-move" class="project-link" target="_blank" rel="noopener">[GitHub →]</a>
