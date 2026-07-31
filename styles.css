@@ -314,14 +314,19 @@ body {
     color: #ff0000;
 }
 
+/* visibility (not just max-height) keeps collapsed links out of the tab order.
+   The 0s delay flips it to hidden only after the collapse transition finishes. */
 .project-body {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.35s ease;
+    visibility: hidden;
+    transition: max-height 0.35s ease, visibility 0s linear 0.35s;
 }
 
 .project-item.expanded .project-body {
     max-height: none;
+    visibility: visible;
+    transition: max-height 0.35s ease, visibility 0s linear 0s;
 }
 
 .project-desc {
