@@ -7,6 +7,9 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     // Project accordion — click to expand/collapse each project card
+    var motionQuery = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+    function reducedMotion() { return !!(motionQuery && motionQuery.matches); }
+
     document.querySelectorAll('.project-toggle').forEach(function(toggleEl) {
         var item = toggleEl.closest('.project-item');
         var body = item.querySelector('.project-body');
@@ -15,12 +18,16 @@ document.addEventListener('DOMContentLoaded', function() {
             var expanded = !item.classList.contains('expanded');
             if (expanded) {
                 item.classList.add('expanded');
-                body.style.maxHeight = body.scrollHeight + 'px';
+                // No transition means no transitionend to release the pin later,
+                // so skip pixel-pinning entirely and let the card size itself
+                body.style.maxHeight = reducedMotion() ? 'none' : body.scrollHeight + 'px';
             } else {
-                // maxHeight may be 'none' (set after expand) — pin it to a pixel
-                // value and force a reflow so the collapse transition has a start point
-                body.style.maxHeight = body.scrollHeight + 'px';
-                void body.offsetHeight;
+                if (!reducedMotion()) {
+                    // maxHeight may be 'none' (set after expand) — pin it to a pixel
+                    // value and force a reflow so the collapse transition has a start point
+                    body.style.maxHeight = body.scrollHeight + 'px';
+                    void body.offsetHeight;
+                }
                 item.classList.remove('expanded');
                 body.style.maxHeight = '0';
             }

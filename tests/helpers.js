@@ -17,13 +17,35 @@ function stripCssComments(css) {
     return css.replace(/\/\*[\s\S]*?\*\//g, '');
 }
 
+// Removes @media/@supports blocks so top-level lookups don't pick up an
+// override that only applies under a media query. Use mediaBlock() for those.
+function stripAtRuleBlocks(css) {
+    let out = '';
+    for (let i = 0; i < css.length; i++) {
+        if (css[i] !== '@') { out += css[i]; continue; }
+        const open = css.indexOf('{', i);
+        if (open === -1) { out += css.slice(i); break; }
+        let depth = 0;
+        let end = open;
+        for (; end < css.length; end++) {
+            if (css[end] === '{') depth++;
+            else if (css[end] === '}') {
+                depth--;
+                if (depth === 0) break;
+            }
+        }
+        i = end;
+    }
+    return out;
+}
+
 // Returns the declaration block bodies for every rule whose selector list
 // contains `selector` exactly (as one of its comma-separated parts).
 function rules(css, selector) {
     const found = [];
     const re = /([^{}]+)\{([^{}]*)\}/g;
     let m;
-    while ((m = re.exec(stripCssComments(css))) !== null) {
+    while ((m = re.exec(stripAtRuleBlocks(stripCssComments(css)))) !== null) {
         const selectors = m[1].split(',').map(s => s.trim().replace(/\s+/g, ' '));
         if (selectors.includes(selector)) found.push(m[2]);
     }

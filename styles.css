@@ -510,4 +510,8 @@ button:focus {
     .back-link:hover .back-arrow {
         animation: none;
     }
+    .project-body,
+    .project-item.expanded .project-body {
+        transition: none;
+    }
 }

@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { read, declaration, functionBody } = require('./helpers');
+const { read, declaration, mediaBlock, functionBody } = require('./helpers');
 
 const css = read('styles.css');
 const js = read('script.js');
@@ -21,6 +21,21 @@ test('collapsed project bodies stay visible for the whole collapse transition', 
     assert.match(collapsed, /visibility 0s linear 0\.35s/);
     assert.match(expanded, /visibility 0s linear 0s/);
     assert.match(collapsed, /max-height 0\.35s/);
+});
+
+test('reduced motion disables the accordion transition', () => {
+    const reduced = mediaBlock(css, 'prefers-reduced-motion');
+    assert.equal(declaration(reduced, '.project-body', 'transition'), 'none');
+    assert.equal(
+        declaration(reduced, '.project-item.expanded .project-body', 'transition'),
+        'none'
+    );
+});
+
+test('reduced motion skips the max-height pin that a transitionend would release', () => {
+    const toggle = functionBody(js, 'toggle');
+    assert.match(toggle, /reducedMotion\(\) \? 'none' : body\.scrollHeight/);
+    assert.match(toggle, /if \(!reducedMotion\(\)\)/);
 });
 
 test('decorative sprite canvases are hidden from assistive tech', () => {
