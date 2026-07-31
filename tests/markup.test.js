@@ -10,6 +10,18 @@ test('no faked buttons — interactive controls are real <button> elements', () 
     assert.match(html, /<button type="button" class="press-start">/);
 });
 
+test('the skip link lands focus on a named main region', () => {
+    const target = html.match(/href="#([^"]+)" class="skip-link"/)[1];
+    // Without tabindex, focus stays put and the skip link only moves the scroll.
+    assert.match(html, new RegExp('<main id="' + target + '" tabindex="-1">'));
+});
+
+test('the primary nav is a labelled landmark', () => {
+    // The skip link deliberately bypasses the menu, so the menu has to stay
+    // findable through landmark navigation instead.
+    assert.match(html, /<nav class="main-menu" aria-label="Main">/);
+});
+
 test('every project card has a real toggle button', () => {
     const items = html.match(/class="project-item"/g) || [];
     const toggles = html.match(/<button type="button" class="project-toggle"/g) || [];
