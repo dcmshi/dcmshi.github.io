@@ -18,6 +18,18 @@ test('sprites are cached, not cache-busted', () => {
     assert.doesNotMatch(js, /\?v=/);
 });
 
+test('no font is downloaded that the site never renders', () => {
+    for (const [name, page] of [['index.html', html], ['404.html', notFound]]) {
+        const request = page.match(/fonts\.googleapis\.com\/css2\?([^"]+)/)[1];
+        const families = [...request.matchAll(/family=([^&]+)/g)].map(m => m[1]);
+        for (const family of families) {
+            const cssName = decodeURIComponent(family).replace(/\+/g, ' ');
+            assert.ok(css.includes("'" + cssName + "'"),
+                `${name} requests ${cssName} but styles.css never uses it`);
+        }
+    }
+});
+
 test('the body font ships as WOFF2 with a TTF fallback', () => {
     assert.ok(size('fonts/DTM-Mono.woff2') < size('fonts/DTM-Mono.ttf') / 2,
         'the WOFF2 should be well under half the TTF');

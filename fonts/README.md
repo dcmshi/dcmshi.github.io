@@ -28,9 +28,9 @@ To use the authentic Undertale font, download **Determination Mono** and place t
 
 ### Fallback Fonts
 
-If Determination Mono isn't loaded, the site will fall back to:
-1. VT323 (Google Fonts - similar style)
-2. System monospace font
+If Determination Mono isn't loaded, the site falls back to the system
+monospace font. (VT323 used to sit in between, but it was a Google Fonts
+download that the local font almost always beat, so it was dropped.)
 
 ### File Structure After Download
 
