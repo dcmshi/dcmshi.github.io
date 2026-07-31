@@ -67,6 +67,23 @@ function declaration(css, selector, prop) {
     return value;
 }
 
+// Returns the body of the first `@<name>` block, e.g. atRuleBlock(css, 'font-face').
+function atRuleBlock(css, name) {
+    const clean = stripCssComments(css);
+    const start = clean.indexOf('@' + name);
+    if (start === -1) return '';
+    const open = clean.indexOf('{', start);
+    let depth = 0;
+    for (let i = open; i < clean.length; i++) {
+        if (clean[i] === '{') depth++;
+        else if (clean[i] === '}') {
+            depth--;
+            if (depth === 0) return clean.slice(open + 1, i);
+        }
+    }
+    return '';
+}
+
 // Returns the body of an @media block whose query contains `queryFragment`.
 function mediaBlock(css, queryFragment) {
     const clean = stripCssComments(css);
@@ -131,6 +148,7 @@ module.exports = {
     read,
     rules,
     declaration,
+    atRuleBlock,
     mediaBlock,
     functionBody,
     contrastRatio,

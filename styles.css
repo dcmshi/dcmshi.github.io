@@ -8,7 +8,9 @@
 
 @font-face {
     font-family: 'Determination Mono';
-    src: url('fonts/DTM-Mono.ttf') format('truetype');
+    /* WOFF2 first (14 KB vs 148 KB); the TTF stays as a fallback */
+    src: url('fonts/DTM-Mono.woff2') format('woff2'),
+         url('fonts/DTM-Mono.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;
