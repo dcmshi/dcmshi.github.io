@@ -485,7 +485,9 @@ body {
     color: #000000;
     padding: 8px;
     text-decoration: none;
-    z-index: 100;
+    /* Above the dog cameos (9999) and the gauntlet overlay (10000) so a
+       passing sprite can never render over the focused skip link */
+    z-index: 10001;
 }
 
 .skip-link:focus {

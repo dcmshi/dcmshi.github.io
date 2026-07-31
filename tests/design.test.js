@@ -5,6 +5,14 @@ const { read, rules, declaration, functionBody } = require('./helpers');
 const css = read('styles.css');
 const js = read('script.js');
 
+test('the skip link stacks above every sprite layer', () => {
+    const skipLink = Number(declaration(css, '.skip-link', 'z-index'));
+    const jsLayers = [...js.matchAll(/zIndex: '(\d+)'/g)].map(m => Number(m[1]));
+    assert.ok(jsLayers.length > 0, 'expected script-managed layers');
+    assert.ok(skipLink > Math.max(...jsLayers),
+        `skip link z-index ${skipLink} must beat ${Math.max(...jsLayers)}`);
+});
+
 test('full-height sections use svh with a vh fallback', () => {
     const block = rules(css, '.section')[0];
     const vhAt = block.indexOf('min-height: 100vh');
