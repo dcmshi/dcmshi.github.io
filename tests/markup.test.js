@@ -44,3 +44,46 @@ test('project toggles start collapsed and point at their panel', () => {
         assert.ok(panelIds.includes(controls), 'aria-controls must target a panel: ' + controls);
     }
 });
+
+// Category groups are a second accordion wrapped around the cards. They must
+// not reuse .project-item / .project-toggle — the assertions above count those,
+// and the script's closest('.project-item') lookup would find the wrong element.
+const groups = [...html.matchAll(
+    /<div class="project-group( expanded)?">([\s\S]*?)<div class="project-group-body"/g
+)];
+
+test('every project group has a real toggle button pointing at its panel', () => {
+    assert.ok(groups.length > 0, 'expected project groups');
+    const toggles = html.match(/<button type="button" class="group-toggle"/g) || [];
+    assert.equal(toggles.length, groups.length);
+
+    const panelIds = [...html.matchAll(/class="project-group-body" id="([^"]*)"/g)].map(m => m[1]);
+    assert.equal(new Set(panelIds).size, panelIds.length, 'panel ids must be unique');
+    assert.equal(panelIds.length, groups.length);
+
+    const controls = [...html.matchAll(
+        /class="group-toggle" aria-expanded="[^"]*" aria-controls="([^"]*)"/g
+    )];
+    assert.equal(controls.length, groups.length, 'every group toggle needs both ARIA attributes');
+    for (const [, target] of controls) {
+        assert.ok(panelIds.includes(target), 'aria-controls must target a group panel: ' + target);
+    }
+});
+
+test('each group agrees with itself about whether it is open', () => {
+    for (const [, expandedClass, header] of groups) {
+        const open = expandedClass === ' expanded';
+        assert.equal(header.match(/class="group-toggle" aria-expanded="([^"]*)"/)[1], String(open));
+        assert.equal(
+            header.match(/<span class="expand-indicator" aria-hidden="true">(\[.\])/)[1],
+            open ? '[-]' : '[+]'
+        );
+    }
+});
+
+test('project cards sit a heading level below their category', () => {
+    const items = html.match(/class="project-item"/g) || [];
+    assert.equal((html.match(/<h3 class="project-group-name"/g) || []).length, groups.length);
+    assert.equal((html.match(/<h4 class="project-name"/g) || []).length, items.length);
+    assert.doesNotMatch(html, /<h3 class="project-name"/, 'cards now nest under an h3 category');
+});

@@ -14,6 +14,10 @@ const RED = '#ff0000'; // .skip-link
 const ON_BACKGROUND = [
     ['.expand-indicator', BLACK],
     ['.project-item.expanded .expand-indicator', BLACK],
+    // The group header is transparent, so its text sits on the section box.
+    ['.expand-indicator', BOX],
+    ['.project-group-name', BOX],
+    ['.project-group.expanded .project-group-name .expand-indicator', BOX],
     ['.project-tech', BLACK],
     ['.project-desc', BLACK],
     ['.project-link', BLACK],

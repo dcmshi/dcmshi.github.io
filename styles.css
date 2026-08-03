@@ -272,6 +272,45 @@ body {
     margin-top: 30px;
 }
 
+/* Category groups — an outer accordion whose panels hold the project cards.
+   The bracketed cyan header borrows the About section's .skills-box language
+   so a category reads as a heading, and `>` stays the leaf-item marker. */
+.project-group {
+    margin-bottom: 30px;
+}
+
+.project-group-name {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: #00ffff;
+    margin-bottom: 0;
+}
+
+.project-group.expanded .project-group-name {
+    margin-bottom: 25px;
+}
+
+.project-group.expanded .project-group-name .expand-indicator {
+    color: #00ffff;
+}
+
+.project-group-body {
+    max-height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    transition: max-height 0.35s ease, visibility 0s linear 0.35s;
+}
+
+.project-group.expanded .project-group-body {
+    max-height: none;
+    visibility: visible;
+    transition: max-height 0.35s ease, visibility 0s linear 0s;
+}
+
+.project-group-body .project-item:last-child {
+    margin-bottom: 0;
+}
+
 .project-item {
     margin-bottom: 40px;
     padding: 20px;
@@ -293,7 +332,8 @@ body {
 
 /* The heading is the label; the button inside it is the accordion control.
    Focus styling comes from the shared button:focus rule. */
-.project-toggle {
+.project-toggle,
+.group-toggle {
     font: inherit;
     color: inherit;
     width: 100%;
@@ -305,6 +345,17 @@ body {
     user-select: none;
     background: none;
     border: none;
+}
+
+/* Must follow the shared rule above, whose `border: none` would otherwise win */
+.group-toggle {
+    border: 2px solid #00ffff;
+    padding: 15px;
+}
+
+.group-toggle:hover {
+    color: #ffff00;
+    border-color: #ffff00;
 }
 
 .project-item.expanded .project-name {
@@ -331,7 +382,10 @@ body {
     transition: max-height 0.35s ease, visibility 0s linear 0.35s;
 }
 
-.project-item.expanded .project-body {
+/* Scoped to an expanded group as well as an expanded card: visibility inherits,
+   so a card left open inside a collapsed group would otherwise re-assert it and
+   put its links back in the tab order while the group clips them to nothing. */
+.project-group.expanded .project-item.expanded .project-body {
     max-height: none;
     visibility: visible;
     transition: max-height 0.35s ease, visibility 0s linear 0s;
@@ -475,6 +529,10 @@ body {
     .project-item {
         padding: 15px;
     }
+
+    .group-toggle {
+        padding: 12px;
+    }
 }
 
 /* ========================================
@@ -526,7 +584,9 @@ button:focus {
         animation: none;
     }
     .project-body,
-    .project-item.expanded .project-body {
+    .project-group.expanded .project-item.expanded .project-body,
+    .project-group-body,
+    .project-group.expanded .project-group-body {
         transition: none;
     }
 }

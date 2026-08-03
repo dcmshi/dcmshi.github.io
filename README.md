@@ -11,7 +11,7 @@ A retro pixel-art inspired personal portfolio website with an Undertale/Deltarun
 - **Static hosting** - Ready for GitHub Pages deployment
 - **Responsive** - Works on desktop, tablet, and mobile
 - **Accessible** - WCAG AA contrast, keyboard navigation, skip-link, semantic landmarks, aria attributes, reduced-motion support
-- **Collapsible project cards** - Each project expands/collapses on click with smooth, lag-free animation
+- **Two-level project menu** - Projects are grouped into collapsible categories, and each card inside expands on click, Undertale menu → sub-menu style
 - **Annoying dog animations** - Sprite-based cameos across the page (respects `prefers-reduced-motion`)
 - **Easter egg** - Gauntlet of Deadly Terror (click "Press Start" to find out)
 - **Custom 404 page** - But nobody came.
@@ -39,7 +39,7 @@ They do not cover animation timing or anything else that needs a live browser.
 
 ## Making Changes
 
-- **Projects** live in the projects section of `index.html` — each is a self-contained `.project-item` block; copy one to add a new project.
+- **Projects** live in the projects section of `index.html`, grouped into `.project-group` categories. Each project is a self-contained `.project-item` block inside a group's `.project-group-body`; copy one to add a project, or copy a whole group to add a category. Both levels are driven by the same `wireAccordion()` call in `script.js` — a group's control is `.group-toggle`, a card's is `.project-toggle`, and they must stay distinct so the two levels don't capture each other's clicks.
 - **Colors** are plain hex values in `styles.css`: black `#000000` background, white text, red `#ff0000` / yellow `#ffff00` / cyan `#00ffff` accents.
 - **Sprite behaviour** (dog animations, gauntlet obstacles) is configured in the constant tables at the top of the IIFE in `script.js`.
 

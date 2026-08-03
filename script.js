@@ -10,40 +10,53 @@ document.addEventListener('DOMContentLoaded', function() {
     var motionQuery = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
     function reducedMotion() { return !!(motionQuery && motionQuery.matches); }
 
-    document.querySelectorAll('.project-toggle').forEach(function(toggleEl) {
-        var item = toggleEl.closest('.project-item');
-        var body = item.querySelector('.project-body');
-        function toggle() {
-            var indicator = toggleEl.querySelector('.expand-indicator');
-            var expanded = !item.classList.contains('expanded');
-            if (expanded) {
-                item.classList.add('expanded');
-                // No transition means no transitionend to release the pin later,
-                // so skip pixel-pinning entirely and let the card size itself
-                body.style.maxHeight = reducedMotion() ? 'none' : body.scrollHeight + 'px';
-            } else {
-                if (!reducedMotion()) {
-                    // maxHeight may be 'none' (set after expand) — pin it to a pixel
-                    // value and force a reflow so the collapse transition has a start point
-                    body.style.maxHeight = body.scrollHeight + 'px';
-                    void body.offsetHeight;
+    function wireAccordion(toggleSelector, itemSelector, bodySelector) {
+        document.querySelectorAll(toggleSelector).forEach(function(toggleEl) {
+            var item = toggleEl.closest(itemSelector);
+            var body = item.querySelector(bodySelector);
+            function toggle() {
+                var indicator = toggleEl.querySelector('.expand-indicator');
+                var expanded = !item.classList.contains('expanded');
+                if (expanded) {
+                    // Measured first: scrollHeight forces a style flush, and once
+                    // .expanded is on that flush commits max-height: none. A
+                    // transition out of `none` is not interpolable, so it would
+                    // snap open and never fire the transitionend that frees the pin.
+                    var contentHeight = body.scrollHeight;
+                    item.classList.add('expanded');
+                    // No transition means no transitionend to release the pin later,
+                    // so skip pixel-pinning entirely and let the card size itself
+                    body.style.maxHeight = reducedMotion() ? 'none' : contentHeight + 'px';
+                } else {
+                    if (!reducedMotion()) {
+                        // maxHeight may be 'none' (set after expand) — pin it to a pixel
+                        // value and force a reflow so the collapse transition has a start point
+                        body.style.maxHeight = body.scrollHeight + 'px';
+                        void body.offsetHeight;
+                    }
+                    item.classList.remove('expanded');
+                    body.style.maxHeight = '0';
                 }
-                item.classList.remove('expanded');
-                body.style.maxHeight = '0';
+                indicator.textContent = expanded ? '[-]' : '[+]';
+                toggleEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
             }
-            indicator.textContent = expanded ? '[-]' : '[+]';
-            toggleEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-        }
-        // Once fully expanded, release the fixed max-height so the card
-        // reflows naturally if the viewport resizes while open
-        body.addEventListener('transitionend', function(e) {
-            if (e.propertyName === 'max-height' && item.classList.contains('expanded')) {
-                body.style.maxHeight = 'none';
-            }
+            // Once fully expanded, release the fixed max-height so the card
+            // reflows naturally if the viewport resizes while open
+            body.addEventListener('transitionend', function(e) {
+                if (e.propertyName === 'max-height' && item.classList.contains('expanded')) {
+                    body.style.maxHeight = 'none';
+                }
+            });
+            // A real <button> already fires click on Enter and Space.
+            toggleEl.addEventListener('click', toggle);
         });
-        // A real <button> already fires click on Enter and Space.
-        toggleEl.addEventListener('click', toggle);
-    });
+    }
+
+    // Two levels: category groups, and the project cards nested inside them.
+    // A card expanding inside an open group bubbles its transitionend up to the
+    // group, which re-releases the group's max-height to fit the taller panel.
+    wireAccordion('.group-toggle', '.project-group', '.project-group-body');
+    wireAccordion('.project-toggle', '.project-item', '.project-body');
 
     // Keyboard navigation support
     document.addEventListener('keydown', function(e) {

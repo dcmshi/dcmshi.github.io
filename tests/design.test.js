@@ -87,6 +87,19 @@ test('.container centres itself, because not every parent is a centring flex row
         `.container sits in ${uncentred[0]}, which does not centre it`);
 });
 
+test('the accordion measures its panel before .expanded is applied', () => {
+    // scrollHeight forces a style flush. Once .expanded is on, that flush commits
+    // the stylesheet's max-height: none — and a transition out of `none` is not
+    // interpolable, so the panel snaps open and no transitionend ever arrives to
+    // release the pinned max-height. A nested panel then clips whatever opens
+    // inside it, stuck at the height it had when it was pinned.
+    const toggle = functionBody(js, 'toggle');
+    const measureAt = toggle.indexOf('body.scrollHeight');
+    const expandAt = toggle.indexOf("classList.add('expanded')");
+    assert.ok(measureAt !== -1 && expandAt !== -1, 'expected both steps in toggle()');
+    assert.ok(measureAt < expandAt, 'measure the panel while it is still collapsed');
+});
+
 test('the sleeping dog stays near the viewport edge and does not linger', () => {
     const sleep = functionBody(js, 'spawnWalkAndSleep');
 
